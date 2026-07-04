@@ -38,6 +38,16 @@ model User {
   lessonNotes LessonNote[]
   watchProgress WatchProgress[]
   watchHistory WatchHistory[]
+  questionBanks QuestionBank[]
+  questions Question[]
+  examAttempts ExamAttempt[]
+  studentAnswers StudentAnswer[]
+  examResults ExamResult[]
+  assignmentsCreated Assignment[] @relation("AssignmentCreator")
+  submissions Submission[]
+  gradesReceived Grade[] @relation("GradeStudent")
+  gradesGiven Grade[] @relation("GradeGrader")
+  certificates Certificate[]
 
   @@unique([tenantId, email])
   @@unique([tenantId, id])
@@ -88,6 +98,22 @@ model Tenant {
   videoChapters VideoChapter[]
   watchProgress WatchProgress[]
   watchHistory WatchHistory[]
+  questionBanks QuestionBank[]
+  questions Question[]
+  choices Choice[]
+  exams Exam[]
+  questionPools QuestionPool[]
+  examAttempts ExamAttempt[]
+  studentAnswers StudentAnswer[]
+  examResults ExamResult[]
+  assignments Assignment[]
+  submissions Submission[]
+  submissionFiles SubmissionFile[]
+  grades Grade[]
+  rubrics Rubric[]
+  certificates Certificate[]
+  certificateTemplates CertificateTemplate[]
+  certificateVerifications CertificateVerification[]
 
   @@index([isActive])
   @@index([deletedAt])
@@ -391,6 +417,10 @@ model Course {
   objectives        CourseObjective[]
   lessons           Lesson[]
   bookmarks         Bookmark[]
+  questionBanks     QuestionBank[]
+  exams             Exam[]
+  assignments       Assignment[]
+  certificates      Certificate[]
 
   @@unique([tenantId, slug])
   @@unique([tenantId, id])
@@ -645,6 +675,8 @@ model Lesson {
   bookmarks       Bookmark[]
   notes           LessonNote[]
   video           Video?
+  exams           Exam[]
+  assignments     Assignment[]
 
   @@unique([tenantId, courseId, slug])
   @@unique([tenantId, id])
@@ -847,4 +879,450 @@ model WatchHistory {
   @@index([tenantId, deletedAt])
   @@index([deletedAt])
   @@map("watch_history")
+}
+
+model QuestionBank {
+  id          String     @id @default(uuid()) @db.Uuid
+  tenantId    String     @db.Uuid
+  courseId    String?    @db.Uuid
+  createdById String?    @db.Uuid
+  title       String     @db.VarChar(200)
+  description String?
+  createdAt   DateTime   @default(now())
+  updatedAt   DateTime   @updatedAt
+  deletedAt   DateTime?
+  tenant      Tenant     @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  course      Course?    @relation(fields: [tenantId, courseId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+  createdBy   User?      @relation(fields: [tenantId, createdById], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+  questions   Question[]
+  exams       Exam[]
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@index([courseId])
+  @@index([createdById])
+  @@index([tenantId, courseId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("question_banks")
+}
+
+model Question {
+  id             String          @id @default(uuid()) @db.Uuid
+  tenantId       String          @db.Uuid
+  questionBankId String          @db.Uuid
+  createdById    String?         @db.Uuid
+  type           String          @db.VarChar(50)
+  prompt         String
+  explanation    String?
+  points         Int             @default(1)
+  sortOrder      Int             @default(0)
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  deletedAt      DateTime?
+  tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  questionBank   QuestionBank    @relation(fields: [tenantId, questionBankId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+  createdBy      User?           @relation(fields: [tenantId, createdById], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+  choices        Choice[]
+  questionPools  QuestionPool[]
+  studentAnswers StudentAnswer[]
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@index([questionBankId])
+  @@index([createdById])
+  @@index([type])
+  @@index([tenantId, questionBankId, sortOrder])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("questions")
+}
+
+model Choice {
+  id         String   @id @default(uuid()) @db.Uuid
+  tenantId   String   @db.Uuid
+  questionId String   @db.Uuid
+  content    String
+  isCorrect  Boolean  @default(false)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  question   Question @relation(fields: [tenantId, questionId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@index([questionId])
+  @@index([tenantId, questionId, sortOrder])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("choices")
+}
+
+model Exam {
+  id             String          @id @default(uuid()) @db.Uuid
+  tenantId       String          @db.Uuid
+  courseId       String          @db.Uuid
+  lessonId       String?         @db.Uuid
+  questionBankId String?         @db.Uuid
+  title          String          @db.VarChar(200)
+  description    String?
+  status         String          @default("draft") @db.VarChar(30)
+  timeLimitMinutes Int?
+  passingScore   Int?
+  maxAttempts    Int?
+  startsAt       DateTime?
+  endsAt         DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  deletedAt      DateTime?
+  tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  course         Course          @relation(fields: [tenantId, courseId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+  lesson         Lesson?         @relation(fields: [tenantId, lessonId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+  questionBank   QuestionBank?   @relation(fields: [tenantId, questionBankId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+  questionPools  QuestionPool[]
+  attempts       ExamAttempt[]
+  results        ExamResult[]
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@index([courseId])
+  @@index([lessonId])
+  @@index([questionBankId])
+  @@index([status])
+  @@index([startsAt])
+  @@index([endsAt])
+  @@index([tenantId, courseId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("exams")
+}
+
+model QuestionPool {
+  id         String   @id @default(uuid()) @db.Uuid
+  tenantId   String   @db.Uuid
+  examId     String   @db.Uuid
+  questionId String   @db.Uuid
+  points     Int      @default(1)
+  sortOrder  Int      @default(0)
+  createdAt  DateTime @default(now())
+  updatedAt  DateTime @updatedAt
+  deletedAt  DateTime?
+  tenant     Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  exam       Exam     @relation(fields: [tenantId, examId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+  question   Question @relation(fields: [tenantId, questionId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([tenantId, examId, questionId])
+  @@index([tenantId])
+  @@index([examId])
+  @@index([questionId])
+  @@index([tenantId, examId, sortOrder])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("question_pools")
+}
+
+model ExamAttempt {
+  id             String          @id @default(uuid()) @db.Uuid
+  tenantId       String          @db.Uuid
+  examId         String          @db.Uuid
+  userId         String          @db.Uuid
+  attemptNumber  Int
+  status         String          @default("in_progress") @db.VarChar(30)
+  startedAt      DateTime        @default(now())
+  submittedAt    DateTime?
+  score          Int?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  deletedAt      DateTime?
+  tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  exam           Exam            @relation(fields: [tenantId, examId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+  user           User            @relation(fields: [tenantId, userId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+  answers        StudentAnswer[]
+  result         ExamResult?
+
+  @@unique([tenantId, examId, userId, attemptNumber])
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@index([examId])
+  @@index([userId])
+  @@index([status])
+  @@index([submittedAt])
+  @@index([tenantId, userId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("exam_attempts")
+}
+
+model StudentAnswer {
+  id            String      @id @default(uuid()) @db.Uuid
+  tenantId      String      @db.Uuid
+  examAttemptId String      @db.Uuid
+  questionId    String      @db.Uuid
+  userId        String      @db.Uuid
+  answerText    String?
+  selectedChoiceIds String[]
+  isCorrect     Boolean?
+  pointsAwarded Int?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
+  tenant        Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  examAttempt   ExamAttempt @relation(fields: [tenantId, examAttemptId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+  question      Question    @relation(fields: [tenantId, questionId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+  user          User        @relation(fields: [tenantId, userId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([tenantId, examAttemptId, questionId])
+  @@index([tenantId])
+  @@index([examAttemptId])
+  @@index([questionId])
+  @@index([userId])
+  @@index([isCorrect])
+  @@index([tenantId, userId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("student_answers")
+}
+
+model ExamResult {
+  id            String      @id @default(uuid()) @db.Uuid
+  tenantId      String      @db.Uuid
+  examId        String      @db.Uuid
+  examAttemptId String      @unique @db.Uuid
+  userId        String      @db.Uuid
+  score         Int
+  maxScore      Int
+  passed        Boolean     @default(false)
+  gradedAt      DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
+  tenant        Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  exam          Exam        @relation(fields: [tenantId, examId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+  examAttempt   ExamAttempt @relation(fields: [tenantId, examAttemptId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+  user          User        @relation(fields: [tenantId, userId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([tenantId, examAttemptId])
+  @@index([tenantId])
+  @@index([examId])
+  @@index([userId])
+  @@index([passed])
+  @@index([gradedAt])
+  @@index([tenantId, userId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("exam_results")
+}
+
+model Assignment {
+  id          String       @id @default(uuid()) @db.Uuid
+  tenantId    String       @db.Uuid
+  courseId    String       @db.Uuid
+  lessonId    String?      @db.Uuid
+  createdById String?      @db.Uuid
+  title       String       @db.VarChar(200)
+  description String?
+  instructions String?
+  status      String       @default("draft") @db.VarChar(30)
+  dueAt       DateTime?
+  maxScore    Int?
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  deletedAt   DateTime?
+  tenant      Tenant       @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  course      Course       @relation(fields: [tenantId, courseId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+  lesson      Lesson?      @relation(fields: [tenantId, lessonId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+  createdBy   User?        @relation("AssignmentCreator", fields: [tenantId, createdById], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+  submissions Submission[]
+  rubrics     Rubric[]
+
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@index([courseId])
+  @@index([lessonId])
+  @@index([createdById])
+  @@index([status])
+  @@index([dueAt])
+  @@index([tenantId, courseId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("assignments")
+}
+
+model Submission {
+  id           String           @id @default(uuid()) @db.Uuid
+  tenantId     String           @db.Uuid
+  assignmentId String           @db.Uuid
+  userId       String           @db.Uuid
+  content      String?
+  status       String           @default("submitted") @db.VarChar(30)
+  submittedAt  DateTime         @default(now())
+  createdAt    DateTime         @default(now())
+  updatedAt    DateTime         @updatedAt
+  deletedAt    DateTime?
+  tenant       Tenant           @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  assignment   Assignment       @relation(fields: [tenantId, assignmentId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+  user         User             @relation(fields: [tenantId, userId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+  files        SubmissionFile[]
+  grade        Grade?
+
+  @@unique([tenantId, assignmentId, userId])
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@index([assignmentId])
+  @@index([userId])
+  @@index([status])
+  @@index([submittedAt])
+  @@index([tenantId, userId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("submissions")
+}
+
+model SubmissionFile {
+  id           String     @id @default(uuid()) @db.Uuid
+  tenantId     String     @db.Uuid
+  submissionId String     @db.Uuid
+  fileName     String     @db.VarChar(255)
+  fileUrl      String     @db.VarChar(500)
+  fileType     String?    @db.VarChar(100)
+  fileSize     Int?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  deletedAt    DateTime?
+  tenant       Tenant     @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  submission   Submission @relation(fields: [tenantId, submissionId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([tenantId])
+  @@index([submissionId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("submission_files")
+}
+
+model Grade {
+  id           String     @id @default(uuid()) @db.Uuid
+  tenantId     String     @db.Uuid
+  submissionId String     @unique @db.Uuid
+  studentId    String     @db.Uuid
+  graderId     String?    @db.Uuid
+  score        Int
+  maxScore     Int
+  feedback     String?
+  gradedAt     DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  deletedAt    DateTime?
+  tenant       Tenant     @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  submission   Submission @relation(fields: [tenantId, submissionId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+  student      User       @relation("GradeStudent", fields: [tenantId, studentId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+  grader       User?      @relation("GradeGrader", fields: [tenantId, graderId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([tenantId, submissionId])
+  @@index([tenantId])
+  @@index([studentId])
+  @@index([graderId])
+  @@index([gradedAt])
+  @@index([tenantId, studentId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("grades")
+}
+
+model Rubric {
+  id           String     @id @default(uuid()) @db.Uuid
+  tenantId     String     @db.Uuid
+  assignmentId String     @db.Uuid
+  title        String     @db.VarChar(200)
+  description  String?
+  maxScore     Int
+  sortOrder    Int        @default(0)
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  deletedAt    DateTime?
+  tenant       Tenant     @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  assignment   Assignment @relation(fields: [tenantId, assignmentId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([tenantId])
+  @@index([assignmentId])
+  @@index([tenantId, assignmentId, sortOrder])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("rubrics")
+}
+
+model Certificate {
+  id             String          @id @default(uuid()) @db.Uuid
+  tenantId       String          @db.Uuid
+  courseId       String          @db.Uuid
+  userId         String          @db.Uuid
+  templateId     String?         @db.Uuid
+  certificateNumber String       @db.VarChar(100)
+  issuedAt       DateTime        @default(now())
+  expiresAt      DateTime?
+  revokedAt      DateTime?
+  createdAt      DateTime        @default(now())
+  updatedAt      DateTime        @updatedAt
+  deletedAt      DateTime?
+  tenant         Tenant          @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  course         Course          @relation(fields: [tenantId, courseId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+  user           User            @relation(fields: [tenantId, userId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+  template       CertificateTemplate? @relation(fields: [tenantId, templateId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+  verification   CertificateVerification?
+
+  @@unique([tenantId, certificateNumber])
+  @@unique([tenantId, courseId, userId])
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@index([courseId])
+  @@index([userId])
+  @@index([templateId])
+  @@index([issuedAt])
+  @@index([expiresAt])
+  @@index([revokedAt])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("certificates")
+}
+
+model CertificateTemplate {
+  id           String        @id @default(uuid()) @db.Uuid
+  tenantId     String        @db.Uuid
+  name         String        @db.VarChar(200)
+  content      String
+  isDefault    Boolean       @default(false)
+  createdAt    DateTime      @default(now())
+  updatedAt    DateTime      @updatedAt
+  deletedAt    DateTime?
+  tenant       Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  certificates Certificate[]
+
+  @@unique([tenantId, name])
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@index([isDefault])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("certificate_templates")
+}
+
+model CertificateVerification {
+  id            String      @id @default(uuid()) @db.Uuid
+  tenantId      String      @db.Uuid
+  certificateId String      @unique @db.Uuid
+  verificationCode String   @unique @db.VarChar(100)
+  verifiedAt    DateTime?
+  createdAt     DateTime    @default(now())
+  updatedAt     DateTime    @updatedAt
+  deletedAt     DateTime?
+  tenant        Tenant      @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  certificate   Certificate @relation(fields: [tenantId, certificateId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([tenantId, certificateId])
+  @@index([tenantId])
+  @@index([verifiedAt])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("certificate_verifications")
 }
