@@ -2,6 +2,7 @@ import express from "express";
 
 import { authRouter } from "./modules/auth/routes/index.js";
 import { profilesRouter } from "./modules/profiles/routes/index.js";
+import { rolesRouter } from "./modules/roles/routes/index.js";
 import { usersRouter } from "./modules/users/routes/index.js";
 
 const app = express();
@@ -13,6 +14,7 @@ app.use(express.urlencoded({ extended: true }));
 app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
 app.use("/api/profiles", profilesRouter);
+app.use("/api/roles", rolesRouter);
 
 // Health Check
 app.get("/", (_req, res) => {
