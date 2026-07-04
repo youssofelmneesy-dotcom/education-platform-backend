@@ -10,3 +10,149 @@ generator client {
 datasource db {
   provider = "postgresql"
 }
+
+model User {
+  id           String     @id @default(uuid()) @db.Uuid
+  tenantId     String     @db.Uuid
+  firstName    String     @db.VarChar(50)
+  lastName     String     @db.VarChar(50)
+  email        String     @db.VarChar(255)
+  passwordHash String
+  isActive     Boolean    @default(true)
+  lastLoginAt  DateTime?
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  deletedAt    DateTime?
+  tenant       Tenant     @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  profile      Profile?
+  roles        UserRole[]
+
+  @@unique([tenantId, email])
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("users")
+}
+
+model Tenant {
+  id          String       @id @default(uuid()) @db.Uuid
+  name        String       @db.VarChar(100)
+  slug        String       @unique @db.VarChar(100)
+  isActive    Boolean      @default(true)
+  createdAt   DateTime     @default(now())
+  updatedAt   DateTime     @updatedAt
+  deletedAt   DateTime?
+  users       User[]
+  profiles    Profile[]
+  roles       Role[]
+  permissions Permission[]
+  userRoles   UserRole[]
+  rolePermissions RolePermission[]
+
+  @@index([isActive])
+  @@index([deletedAt])
+  @@map("tenants")
+}
+
+model Profile {
+  id        String    @id @default(uuid()) @db.Uuid
+  tenantId  String    @db.Uuid
+  userId    String    @unique @db.Uuid
+  phone     String?   @db.VarChar(30)
+  avatarUrl String?   @db.VarChar(500)
+  bio       String?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  user      User      @relation(fields: [tenantId, userId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([tenantId, userId])
+  @@index([tenantId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("profiles")
+}
+
+model Role {
+  id          String           @id @default(uuid()) @db.Uuid
+  tenantId    String           @db.Uuid
+  name        String           @db.VarChar(100)
+  description String?
+  isSystem    Boolean          @default(false)
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  deletedAt   DateTime?
+  tenant      Tenant           @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  users       UserRole[]
+  permissions RolePermission[]
+
+  @@unique([tenantId, name])
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("roles")
+}
+
+model Permission {
+  id          String           @id @default(uuid()) @db.Uuid
+  tenantId    String           @db.Uuid
+  resource    String           @db.VarChar(100)
+  action      String           @db.VarChar(100)
+  description String?
+  createdAt   DateTime         @default(now())
+  updatedAt   DateTime         @updatedAt
+  deletedAt   DateTime?
+  tenant      Tenant           @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  roles       RolePermission[]
+
+  @@unique([tenantId, resource, action])
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("permissions")
+}
+
+model UserRole {
+  id        String    @id @default(uuid()) @db.Uuid
+  tenantId  String    @db.Uuid
+  userId    String    @db.Uuid
+  roleId    String    @db.Uuid
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  user      User      @relation(fields: [tenantId, userId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+  role      Role      @relation(fields: [tenantId, roleId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([tenantId, userId, roleId])
+  @@index([tenantId])
+  @@index([userId])
+  @@index([roleId])
+  @@index([tenantId, deletedAt])
+  @@map("user_roles")
+}
+
+model RolePermission {
+  id           String     @id @default(uuid()) @db.Uuid
+  tenantId     String     @db.Uuid
+  roleId       String     @db.Uuid
+  permissionId String     @db.Uuid
+  createdAt    DateTime   @default(now())
+  updatedAt    DateTime   @updatedAt
+  deletedAt    DateTime?
+  tenant       Tenant     @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  role         Role       @relation(fields: [tenantId, roleId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+  permission   Permission @relation(fields: [tenantId, permissionId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([tenantId, roleId, permissionId])
+  @@index([tenantId])
+  @@index([roleId])
+  @@index([permissionId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("role_permissions")
+}

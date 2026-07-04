@@ -1,1 +1,1 @@
-export {};
+export * from "./auth-user.type.js";
