@@ -26,6 +26,11 @@ model User {
   tenant       Tenant     @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   profile      Profile?
   roles        UserRole[]
+  refreshTokens RefreshToken[]
+  otps         OTP[]
+  sessions     UserSession[]
+  trustedDevices TrustedDevice[]
+  loginHistory LoginHistory[]
 
   @@unique([tenantId, email])
   @@unique([tenantId, id])
@@ -49,6 +54,11 @@ model Tenant {
   permissions Permission[]
   userRoles   UserRole[]
   rolePermissions RolePermission[]
+  refreshTokens RefreshToken[]
+  otps        OTP[]
+  sessions    UserSession[]
+  trustedDevices TrustedDevice[]
+  loginHistory LoginHistory[]
 
   @@index([isActive])
   @@index([deletedAt])
@@ -155,4 +165,133 @@ model RolePermission {
   @@index([tenantId, deletedAt])
   @@index([deletedAt])
   @@map("role_permissions")
+}
+
+model RefreshToken {
+  id           String    @id @default(uuid()) @db.Uuid
+  tenantId     String    @db.Uuid
+  userId       String    @db.Uuid
+  tokenHash    String    @unique
+  expiresAt    DateTime
+  revokedAt    DateTime?
+  createdAt    DateTime  @default(now())
+  updatedAt    DateTime  @updatedAt
+  deletedAt    DateTime?
+  tenant       Tenant    @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  user         User      @relation(fields: [tenantId, userId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([revokedAt])
+  @@index([tenantId, userId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("refresh_tokens")
+}
+
+model OTP {
+  id        String    @id @default(uuid()) @db.Uuid
+  tenantId  String    @db.Uuid
+  userId    String    @db.Uuid
+  codeHash  String
+  purpose   String    @db.VarChar(50)
+  expiresAt DateTime
+  usedAt    DateTime?
+  attempts  Int       @default(0)
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  user      User      @relation(fields: [tenantId, userId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([purpose])
+  @@index([expiresAt])
+  @@index([tenantId, userId, purpose])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("otps")
+}
+
+model UserSession {
+  id        String    @id @default(uuid()) @db.Uuid
+  tenantId  String    @db.Uuid
+  userId    String    @db.Uuid
+  sessionHash String  @unique
+  ipAddress String?   @db.VarChar(45)
+  userAgent String?
+  startedAt DateTime  @default(now())
+  lastSeenAt DateTime?
+  expiresAt DateTime
+  revokedAt DateTime?
+  createdAt DateTime  @default(now())
+  updatedAt DateTime  @updatedAt
+  deletedAt DateTime?
+  tenant    Tenant    @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  user      User      @relation(fields: [tenantId, userId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([expiresAt])
+  @@index([revokedAt])
+  @@index([tenantId, userId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("user_sessions")
+}
+
+model TrustedDevice {
+  id                    String    @id @default(uuid()) @db.Uuid
+  tenantId              String    @db.Uuid
+  userId                String    @db.Uuid
+  deviceFingerprintHash String
+  deviceName            String?   @db.VarChar(100)
+  ipAddress             String?   @db.VarChar(45)
+  userAgent             String?
+  trustedAt             DateTime  @default(now())
+  lastUsedAt            DateTime?
+  revokedAt             DateTime?
+  createdAt             DateTime  @default(now())
+  updatedAt             DateTime  @updatedAt
+  deletedAt             DateTime?
+  tenant                Tenant    @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  user                  User      @relation(fields: [tenantId, userId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+
+  @@unique([tenantId, userId, deviceFingerprintHash])
+  @@index([tenantId])
+  @@index([userId])
+  @@index([revokedAt])
+  @@index([tenantId, userId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("trusted_devices")
+}
+
+model LoginHistory {
+  id         String    @id @default(uuid()) @db.Uuid
+  tenantId   String    @db.Uuid
+  userId     String?   @db.Uuid
+  email      String    @db.VarChar(255)
+  successful Boolean   @default(false)
+  failureReason String? @db.VarChar(255)
+  ipAddress  String?   @db.VarChar(45)
+  userAgent  String?
+  createdAt  DateTime  @default(now())
+  updatedAt  DateTime  @updatedAt
+  deletedAt  DateTime?
+  tenant     Tenant    @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  user       User?     @relation(fields: [tenantId, userId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([tenantId])
+  @@index([userId])
+  @@index([email])
+  @@index([successful])
+  @@index([createdAt])
+  @@index([tenantId, email])
+  @@index([tenantId, userId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("login_history")
 }
