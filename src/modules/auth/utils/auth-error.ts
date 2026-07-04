@@ -13,3 +13,9 @@ export class EmailAlreadyExistsError extends AuthError {
     super("Email already exists", 409);
   }
 }
+
+export class InvalidCredentialsError extends AuthError {
+  constructor() {
+    super("Invalid email or password", 401);
+  }
+}
