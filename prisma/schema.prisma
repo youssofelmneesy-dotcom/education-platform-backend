@@ -48,6 +48,13 @@ model User {
   gradesReceived Grade[] @relation("GradeStudent")
   gradesGiven Grade[] @relation("GradeGrader")
   certificates Certificate[]
+  orders Order[]
+  couponUsages CouponUsage[]
+  giftCardsPurchased GiftCard[] @relation("GiftCardPurchaser")
+  giftCardsRedeemed GiftCard[] @relation("GiftCardRedeemer")
+  subscriptions Subscription[]
+  invoices Invoice[]
+  refunds Refund[]
 
   @@unique([tenantId, email])
   @@unique([tenantId, id])
@@ -114,6 +121,15 @@ model Tenant {
   certificates Certificate[]
   certificateTemplates CertificateTemplate[]
   certificateVerifications CertificateVerification[]
+  orders Order[]
+  orderItems OrderItem[]
+  payments Payment[]
+  coupons Coupon[]
+  couponUsages CouponUsage[]
+  giftCards GiftCard[]
+  subscriptions Subscription[]
+  invoices Invoice[]
+  refunds Refund[]
 
   @@index([isActive])
   @@index([deletedAt])
@@ -421,6 +437,8 @@ model Course {
   exams             Exam[]
   assignments       Assignment[]
   certificates      Certificate[]
+  orderItems        OrderItem[]
+  subscriptions     Subscription[]
 
   @@unique([tenantId, slug])
   @@unique([tenantId, id])
@@ -489,6 +507,8 @@ model Bundle {
   deletedAt        DateTime?
   tenant           Tenant         @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
   courses          BundleCourse[]
+  orderItems       OrderItem[]
+  subscriptions    Subscription[]
 
   @@unique([tenantId, slug])
   @@unique([tenantId, id])
@@ -1325,4 +1345,289 @@ model CertificateVerification {
   @@index([tenantId, deletedAt])
   @@index([deletedAt])
   @@map("certificate_verifications")
+}
+
+model Order {
+  id          String        @id @default(uuid()) @db.Uuid
+  tenantId    String        @db.Uuid
+  userId      String        @db.Uuid
+  orderNumber String        @db.VarChar(100)
+  status      String        @default("pending") @db.VarChar(30)
+  currency    String        @db.VarChar(3)
+  subtotal    Int
+  discount    Int           @default(0)
+  tax         Int           @default(0)
+  total       Int
+  createdAt   DateTime      @default(now())
+  updatedAt   DateTime      @updatedAt
+  deletedAt   DateTime?
+  tenant      Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  user        User          @relation(fields: [tenantId, userId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+  items       OrderItem[]
+  payments    Payment[]
+  couponUsages CouponUsage[]
+  invoices    Invoice[]
+  refunds     Refund[]
+
+  @@unique([tenantId, orderNumber])
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@index([userId])
+  @@index([status])
+  @@index([createdAt])
+  @@index([tenantId, userId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("orders")
+}
+
+model OrderItem {
+  id        String   @id @default(uuid()) @db.Uuid
+  tenantId  String   @db.Uuid
+  orderId   String   @db.Uuid
+  courseId  String?  @db.Uuid
+  bundleId  String?  @db.Uuid
+  itemType  String   @db.VarChar(30)
+  title     String   @db.VarChar(200)
+  quantity  Int      @default(1)
+  unitPrice Int
+  total     Int
+  createdAt DateTime @default(now())
+  updatedAt DateTime @updatedAt
+  deletedAt DateTime?
+  tenant    Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  order     Order    @relation(fields: [tenantId, orderId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+  course    Course?  @relation(fields: [tenantId, courseId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+  bundle    Bundle?  @relation(fields: [tenantId, bundleId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([tenantId])
+  @@index([orderId])
+  @@index([courseId])
+  @@index([bundleId])
+  @@index([itemType])
+  @@index([tenantId, orderId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("order_items")
+}
+
+model Payment {
+  id                    String   @id @default(uuid()) @db.Uuid
+  tenantId              String   @db.Uuid
+  orderId               String   @db.Uuid
+  provider              String   @db.VarChar(50)
+  providerTransactionId String?  @db.VarChar(255)
+  status                String   @default("pending") @db.VarChar(30)
+  currency              String   @db.VarChar(3)
+  amount                Int
+  paidAt                DateTime?
+  createdAt             DateTime @default(now())
+  updatedAt             DateTime @updatedAt
+  deletedAt             DateTime?
+  tenant                Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  order                 Order    @relation(fields: [tenantId, orderId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+  refunds               Refund[]
+
+  @@unique([tenantId, provider, providerTransactionId])
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@index([orderId])
+  @@index([provider])
+  @@index([status])
+  @@index([paidAt])
+  @@index([tenantId, orderId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("payments")
+}
+
+model Coupon {
+  id              String        @id @default(uuid()) @db.Uuid
+  tenantId        String        @db.Uuid
+  code            String        @db.VarChar(100)
+  description     String?
+  discountType    String        @db.VarChar(30)
+  discountValue   Int
+  maxRedemptions  Int?
+  perUserLimit    Int?
+  startsAt        DateTime?
+  expiresAt       DateTime?
+  isActive        Boolean       @default(true)
+  createdAt       DateTime      @default(now())
+  updatedAt       DateTime      @updatedAt
+  deletedAt       DateTime?
+  tenant          Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  usages          CouponUsage[]
+
+  @@unique([tenantId, code])
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@index([isActive])
+  @@index([startsAt])
+  @@index([expiresAt])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("coupons")
+}
+
+model CouponUsage {
+  id             String   @id @default(uuid()) @db.Uuid
+  tenantId       String   @db.Uuid
+  couponId       String   @db.Uuid
+  orderId        String   @db.Uuid
+  userId         String   @db.Uuid
+  discountAmount Int
+  usedAt         DateTime @default(now())
+  createdAt      DateTime @default(now())
+  updatedAt      DateTime @updatedAt
+  deletedAt      DateTime?
+  tenant         Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  coupon         Coupon   @relation(fields: [tenantId, couponId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+  order          Order    @relation(fields: [tenantId, orderId], references: [tenantId, id], onDelete: Cascade, onUpdate: Cascade)
+  user           User     @relation(fields: [tenantId, userId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([tenantId, couponId, orderId])
+  @@index([tenantId])
+  @@index([couponId])
+  @@index([orderId])
+  @@index([userId])
+  @@index([usedAt])
+  @@index([tenantId, userId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("coupon_usages")
+}
+
+model GiftCard {
+  id             String    @id @default(uuid()) @db.Uuid
+  tenantId       String    @db.Uuid
+  codeHash       String    @unique
+  purchaserId    String?   @db.Uuid
+  redeemedById   String?   @db.Uuid
+  currency       String    @db.VarChar(3)
+  initialBalance Int
+  currentBalance Int
+  expiresAt      DateTime?
+  redeemedAt     DateTime?
+  createdAt      DateTime  @default(now())
+  updatedAt      DateTime  @updatedAt
+  deletedAt      DateTime?
+  tenant         Tenant    @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  purchaser      User?     @relation("GiftCardPurchaser", fields: [tenantId, purchaserId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+  redeemedBy     User?     @relation("GiftCardRedeemer", fields: [tenantId, redeemedById], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@index([tenantId])
+  @@index([purchaserId])
+  @@index([redeemedById])
+  @@index([expiresAt])
+  @@index([redeemedAt])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("gift_cards")
+}
+
+model Subscription {
+  id                     String    @id @default(uuid()) @db.Uuid
+  tenantId               String    @db.Uuid
+  userId                 String    @db.Uuid
+  courseId               String?   @db.Uuid
+  bundleId               String?   @db.Uuid
+  provider               String?   @db.VarChar(50)
+  providerSubscriptionId String?   @db.VarChar(255)
+  status                 String    @default("active") @db.VarChar(30)
+  startsAt               DateTime  @default(now())
+  currentPeriodStart     DateTime?
+  currentPeriodEnd       DateTime?
+  canceledAt             DateTime?
+  createdAt              DateTime  @default(now())
+  updatedAt              DateTime  @updatedAt
+  deletedAt              DateTime?
+  tenant                 Tenant    @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  user                   User      @relation(fields: [tenantId, userId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+  course                 Course?   @relation(fields: [tenantId, courseId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+  bundle                 Bundle?   @relation(fields: [tenantId, bundleId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+  invoices               Invoice[]
+
+  @@unique([tenantId, provider, providerSubscriptionId])
+  @@unique([tenantId, id])
+  @@index([tenantId])
+  @@index([userId])
+  @@index([courseId])
+  @@index([bundleId])
+  @@index([status])
+  @@index([currentPeriodEnd])
+  @@index([canceledAt])
+  @@index([tenantId, userId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("subscriptions")
+}
+
+model Invoice {
+  id             String        @id @default(uuid()) @db.Uuid
+  tenantId       String        @db.Uuid
+  userId         String        @db.Uuid
+  orderId        String?       @db.Uuid
+  subscriptionId String?       @db.Uuid
+  invoiceNumber  String        @db.VarChar(100)
+  status         String        @default("open") @db.VarChar(30)
+  currency       String        @db.VarChar(3)
+  subtotal       Int
+  tax            Int           @default(0)
+  total          Int
+  dueAt          DateTime?
+  paidAt         DateTime?
+  createdAt      DateTime      @default(now())
+  updatedAt      DateTime      @updatedAt
+  deletedAt      DateTime?
+  tenant         Tenant        @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  user           User          @relation(fields: [tenantId, userId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+  order          Order?        @relation(fields: [tenantId, orderId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+  subscription   Subscription? @relation(fields: [tenantId, subscriptionId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([tenantId, invoiceNumber])
+  @@index([tenantId])
+  @@index([userId])
+  @@index([orderId])
+  @@index([subscriptionId])
+  @@index([status])
+  @@index([dueAt])
+  @@index([paidAt])
+  @@index([tenantId, userId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("invoices")
+}
+
+model Refund {
+  id                 String   @id @default(uuid()) @db.Uuid
+  tenantId           String   @db.Uuid
+  orderId            String   @db.Uuid
+  paymentId          String?  @db.Uuid
+  userId             String   @db.Uuid
+  providerRefundId   String?  @db.VarChar(255)
+  status             String   @default("pending") @db.VarChar(30)
+  reason             String?
+  currency           String   @db.VarChar(3)
+  amount             Int
+  refundedAt         DateTime?
+  createdAt          DateTime @default(now())
+  updatedAt          DateTime @updatedAt
+  deletedAt          DateTime?
+  tenant             Tenant   @relation(fields: [tenantId], references: [id], onDelete: Restrict, onUpdate: Cascade)
+  order              Order    @relation(fields: [tenantId, orderId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+  payment            Payment? @relation(fields: [tenantId, paymentId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+  user               User     @relation(fields: [tenantId, userId], references: [tenantId, id], onDelete: Restrict, onUpdate: Cascade)
+
+  @@unique([tenantId, providerRefundId])
+  @@index([tenantId])
+  @@index([orderId])
+  @@index([paymentId])
+  @@index([userId])
+  @@index([status])
+  @@index([refundedAt])
+  @@index([tenantId, userId])
+  @@index([tenantId, deletedAt])
+  @@index([deletedAt])
+  @@map("refunds")
 }
