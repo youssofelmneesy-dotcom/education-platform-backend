@@ -1,1 +1,1 @@
-export {};
+export * from "./permission-record.js";
