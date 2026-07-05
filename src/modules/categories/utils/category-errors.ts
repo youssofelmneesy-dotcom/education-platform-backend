@@ -5,16 +5,9 @@ export class CategoryNotFoundError extends Error {
   }
 }
 
-export class DuplicateCategoryNameError extends Error {
+export class DuplicateCategorySlugError extends Error {
   constructor() {
-    super("Category with this name already exists");
-    this.name = "DuplicateCategoryNameError";
-  }
-}
-
-export class InvalidParentCategoryError extends Error {
-  constructor() {
-    super("Invalid parent category");
-    this.name = "InvalidParentCategoryError";
+    super("Category with this slug already exists");
+    this.name = "DuplicateCategorySlugError";
   }
 }

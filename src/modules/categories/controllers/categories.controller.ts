@@ -1,9 +1,8 @@
 import type { Request, Response } from "express";
-import type { CreateCategoryRequestDto, CategoryResponseDto, CategoriesListResponseDto, UpdateCategoryRequestDto } from "../dto/index.js";
 import type { ICategoriesController, ICategoriesService } from "../interfaces/index.js";
 import { CategoriesService } from "../services/index.js";
 import { createCategorySchema, updateCategorySchema } from "../validators/index.js";
-import { CategoryNotFoundError, DuplicateCategoryNameError, InvalidParentCategoryError } from "../utils/index.js";
+import { CategoryNotFoundError, DuplicateCategorySlugError } from "../utils/index.js";
 
 export class CategoriesController implements ICategoriesController {
   constructor(private readonly categoriesService: ICategoriesService = new CategoriesService()) {}
@@ -30,13 +29,8 @@ export class CategoriesController implements ICategoriesController {
 
       res.status(201).json({ success: true, message: "Category created successfully", data });
     } catch (error) {
-      if (error instanceof DuplicateCategoryNameError) {
+      if (error instanceof DuplicateCategorySlugError) {
         res.status(409).json({ success: false, message: error.message });
-        return;
-      }
-
-      if (error instanceof InvalidParentCategoryError) {
-        res.status(400).json({ success: false, message: error.message });
         return;
       }
 
@@ -113,13 +107,8 @@ export class CategoriesController implements ICategoriesController {
         return;
       }
 
-      if (error instanceof DuplicateCategoryNameError) {
+      if (error instanceof DuplicateCategorySlugError) {
         res.status(409).json({ success: false, message: error.message });
-        return;
-      }
-
-      if (error instanceof InvalidParentCategoryError) {
-        res.status(400).json({ success: false, message: error.message });
         return;
       }
 

@@ -3,7 +3,6 @@ export interface CategoryRecord {
   name: string;
   slug: string;
   description: string | null;
-  parentId: string | null;
   createdAt: Date;
   updatedAt: Date;
 }
