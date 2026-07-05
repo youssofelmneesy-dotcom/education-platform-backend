@@ -3,6 +3,7 @@ import express from "express";
 import { authRouter } from "./modules/auth/routes/index.js";
 import { categoriesRouter } from "./modules/categories/routes/index.js";
 import { coursesRouter } from "./modules/courses/routes/index.js";
+import { lessonsRouter } from "./modules/lessons/routes/index.js";
 import { profilesRouter } from "./modules/profiles/routes/index.js";
 import { permissionsRouter } from "./modules/permissions/routes/index.js";
 import { rolesRouter } from "./modules/roles/routes/index.js";
@@ -23,6 +24,7 @@ app.use("/api/roles", rolesRouter);
 app.use("/api/categories", categoriesRouter);
 app.use("/api/tags", tagsRouter);
 app.use("/api/courses", coursesRouter);
+app.use("/api/courses", lessonsRouter);
 
 // Health Check
 app.get("/", (_req, res) => {
