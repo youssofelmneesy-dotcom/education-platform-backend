@@ -1,8 +1,9 @@
-import type { AuthUserRecord, CreateAuthUserData, RefreshTokenRecord } from "../types/index.js";
+import type { AuthUserRecord, AuthorizationContext, CreateAuthUserData, RefreshTokenRecord } from "../types/index.js";
 
 export interface IAuthRepository {
   existsByEmail(email: string): Promise<boolean>;
   findByEmailAndTenant(email: string, tenantId: string): Promise<(AuthUserRecord & { passwordHash: string }) | null>;
+  getAuthorizationContext(userId: string, tenantId: string, user: AuthorizationContext["user"]): Promise<AuthorizationContext | null>;
   findRefreshTokenByUserAndTenant(userId: string, tenantId: string): Promise<RefreshTokenRecord | null>;
   create(data: CreateAuthUserData): Promise<AuthUserRecord>;
   saveRefreshToken(userId: string, tokenHash: string, expiresAt: Date, tenantId: string): Promise<void>;

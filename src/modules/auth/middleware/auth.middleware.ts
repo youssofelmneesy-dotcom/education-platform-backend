@@ -1,5 +1,8 @@
 import type { NextFunction, Request, Response } from "express";
+import { UnauthorizedError } from "../../../shared/errors/index.js";
+import { AuthRepository } from "../repositories/index.js";
 import { verifyJwt } from "../services/auth.service.js";
+import type { AuthorizationContext } from "../types/index.js";
 
 export interface AuthenticatedUserPayload {
   sub: string;
@@ -9,18 +12,20 @@ export interface AuthenticatedUserPayload {
   exp: number;
 }
 
-export const authMiddleware = (req: Request, res: Response, next: NextFunction): void => {
+const authRepository = new AuthRepository();
+
+export const authMiddleware = async (req: Request, _res: Response, next: NextFunction): Promise<void> => {
   const authorizationHeader = req.header("Authorization") ?? req.header("authorization");
 
   if (!authorizationHeader) {
-    res.status(401).json({ success: false, message: "Unauthorized" });
+    next(new UnauthorizedError());
     return;
   }
 
   const [scheme, token] = authorizationHeader.split(" ");
 
   if (scheme !== "Bearer" || !token) {
-    res.status(401).json({ success: false, message: "Unauthorized" });
+    next(new UnauthorizedError());
     return;
   }
 
@@ -35,7 +40,7 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction):
   try {
     payload = verifyJwt(token, secret);
   } catch {
-    res.status(401).json({ success: false, message: "Unauthorized" });
+    next(new UnauthorizedError());
     return;
   }
 
@@ -46,11 +51,11 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction):
     typeof payload.iat !== "number" ||
     typeof payload.exp !== "number"
   ) {
-    res.status(401).json({ success: false, message: "Unauthorized" });
+    next(new UnauthorizedError());
     return;
   }
 
-  req.user = {
+  const user = {
     sub: payload.sub,
     email: payload.email,
     tenantId: payload.tenantId,
@@ -58,11 +63,26 @@ export const authMiddleware = (req: Request, res: Response, next: NextFunction):
     exp: payload.exp,
   };
 
+  const authorizationContext = await authRepository.getAuthorizationContext(user.sub, user.tenantId, user);
+
+  if (!authorizationContext) {
+    next(new UnauthorizedError());
+    return;
+  }
+
+  req.auth = authorizationContext;
+  req.user = authorizationContext.user;
+  req.userRoles = authorizationContext.roles;
+  req.userPermissions = authorizationContext.permissions;
+
   next();
 };
 
 declare module "express-serve-static-core" {
   interface Request {
     user?: AuthenticatedUserPayload;
+    auth?: AuthorizationContext;
+    userRoles?: string[];
+    userPermissions?: string[];
   }
 }

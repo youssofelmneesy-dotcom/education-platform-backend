@@ -1,6 +1,6 @@
 import { prisma } from "../../../database/index.js";
 import type { IAuthRepository } from "../interfaces/index.js";
-import type { AuthUserRecord, CreateAuthUserData, RefreshTokenRecord } from "../types/index.js";
+import type { AuthUserRecord, AuthorizationContext, CreateAuthUserData, PermissionKey, RefreshTokenRecord } from "../types/index.js";
 
 const DEFAULT_TENANT_ID = process.env.TENANT_ID ?? "00000000-0000-0000-0000-000000000000";
 
@@ -36,6 +36,77 @@ export class AuthRepository implements IAuthRepository {
         createdAt: true,
       },
     });
+  }
+
+  async getAuthorizationContext(userId: string, tenantId: string, user: AuthorizationContext["user"]): Promise<AuthorizationContext | null> {
+    const authUser = await prisma.user.findFirst({
+      where: {
+        id: userId,
+        tenantId,
+        deletedAt: null,
+      },
+      select: {
+        id: true,
+        roles: {
+          where: {
+            tenantId,
+            deletedAt: null,
+          },
+          select: {
+            role: {
+              select: {
+                name: true,
+                deletedAt: true,
+                permissions: {
+                  where: {
+                    tenantId,
+                    deletedAt: null,
+                  },
+                  select: {
+                    permission: {
+                      select: {
+                        resource: true,
+                        action: true,
+                        deletedAt: true,
+                      },
+                    },
+                  },
+                },
+              },
+            },
+          },
+        },
+      },
+    });
+
+    if (!authUser) {
+      return null;
+    }
+
+    const roles = new Set<string>();
+    const permissions = new Set<PermissionKey>();
+
+    for (const userRole of authUser.roles) {
+      if (userRole.role.deletedAt) {
+        continue;
+      }
+
+      roles.add(userRole.role.name.toLowerCase());
+
+      for (const rolePermission of userRole.role.permissions) {
+        const permission = rolePermission.permission;
+
+        if (!permission.deletedAt) {
+          permissions.add(`${permission.resource.toLowerCase()}:${permission.action.toLowerCase()}`);
+        }
+      }
+    }
+
+    return {
+      user,
+      roles: [...roles],
+      permissions: [...permissions],
+    };
   }
 
   async findRefreshTokenByUserAndTenant(userId: string, tenantId: string): Promise<RefreshTokenRecord | null> {

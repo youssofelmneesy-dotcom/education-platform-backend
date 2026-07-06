@@ -5,6 +5,7 @@ import type { LessonAttachmentRecord } from "../types/index.js";
 
 const lessonAttachmentSelect = {
   id: true,
+  tenantId: true,
   lessonId: true,
   title: true,
   fileUrl: true,
@@ -13,6 +14,7 @@ const lessonAttachmentSelect = {
   sortOrder: true,
   createdAt: true,
   updatedAt: true,
+  deletedAt: true,
 } as const;
 
 export class LessonAttachmentsRepository implements ILessonAttachmentsRepository {

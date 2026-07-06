@@ -1,6 +1,7 @@
-export class ProfileNotFoundError extends Error {
+import { AppError } from "../../../shared/errors/index.js";
+
+export class ProfileNotFoundError extends AppError {
   constructor() {
-    super("Profile not found");
-    this.name = "ProfileNotFoundError";
+    super("Profile not found", 404, "PROFILE_NOT_FOUND");
   }
 }

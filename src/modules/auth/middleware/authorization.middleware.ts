@@ -1,57 +1,57 @@
 import type { NextFunction, Response } from "express";
 import type { Request } from "express-serve-static-core";
-import { prisma } from "../../../database/index.js";
+import { ForbiddenAppError, UnauthorizedError } from "../../../shared/errors/index.js";
+import { hasAnyRole, hasPermissions } from "../utils/index.js";
 
 export const requireRoles = (...requiredRoles: string[]) => {
-  return async (req: Request, res: Response, next: NextFunction): Promise<void> => {
-    // Check if user is authenticated
+  return (req: Request, _res: Response, next: NextFunction): void => {
     if (!req.user) {
-      res.status(401).json({ success: false, message: "Unauthorized" });
+      next(new UnauthorizedError());
       return;
     }
 
-    const userId = req.user.sub;
-    const tenantId = req.user.tenantId;
+    const userRoleNames = req.auth?.roles ?? req.userRoles ?? [];
+    const hasRequiredRole = hasAnyRole(userRoleNames, requiredRoles);
 
-    try {
-      // Load user's roles from database
-      const userRoles = await prisma.userRole.findMany({
-        where: {
-          tenantId,
-          userId,
-          deletedAt: null,
-        },
-        include: {
-          role: {
-            select: {
-              name: true,
-            },
-          },
-        },
-      });
-
-      const userRoleNames = userRoles.map((ur) => ur.role.name);
-
-      // Check if user has at least one of the required roles
-      const hasRequiredRole = requiredRoles.some((role) => userRoleNames.includes(role));
-
-      if (!hasRequiredRole) {
-        res.status(403).json({ success: false, message: "Forbidden" });
-        return;
-      }
-
-      // Attach user roles to request for downstream use
-      req.userRoles = userRoleNames;
-
-      next();
-    } catch {
-      res.status(500).json({ success: false, message: "Internal server error" });
+    if (!hasRequiredRole) {
+      next(new ForbiddenAppError());
+      return;
     }
+
+    next();
   };
 };
 
-declare module "express-serve-static-core" {
-  interface Request {
-    userRoles?: string[];
-  }
-}
+export const requirePermissions = (...requiredPermissions: string[]) => requireAllPermissions(...requiredPermissions);
+
+export const requireAnyPermission = (...requiredPermissions: string[]) => {
+  return (req: Request, _res: Response, next: NextFunction): void => {
+    if (!req.user) {
+      next(new UnauthorizedError());
+      return;
+    }
+
+    if (!hasPermissions(req.auth?.permissions ?? req.userPermissions ?? [], requiredPermissions, "any")) {
+      next(new ForbiddenAppError());
+      return;
+    }
+
+    next();
+  };
+};
+
+export const requireAllPermissions = (...requiredPermissions: string[]) => {
+  return (req: Request, _res: Response, next: NextFunction): void => {
+    if (!req.user) {
+      next(new UnauthorizedError());
+      return;
+    }
+
+    if (!hasPermissions(req.auth?.permissions ?? req.userPermissions ?? [], requiredPermissions, "all")) {
+      next(new ForbiddenAppError());
+      return;
+    }
+
+    next();
+  };
+};
