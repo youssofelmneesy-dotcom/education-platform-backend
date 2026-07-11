@@ -1,0 +1,21 @@
+export type SortOrder = "asc" | "desc";
+export interface PaginationQueryDto { page: number; limit: number; search?: string; status?: string; userId?: string; sortBy?: string; sortOrder?: SortOrder }
+export interface CreateOrderItemDto { courseId?: string | null; bundleId?: string | null; itemType: string; title: string; quantity?: number; unitPrice: number }
+export interface CreateOrderDto { userId?: string; currency: string; tax?: number; couponCode?: string; giftCardCode?: string; items: CreateOrderItemDto[] }
+export interface UpdateOrderDto { status?: string; tax?: number }
+export interface OrderDto { id: string; userId: string; orderNumber: string; status: string; currency: string; subtotal: number; discount: number; tax: number; total: number; items: any[]; createdAt: string; updatedAt: string }
+export interface CreatePaymentDto { orderId: string; provider: string; providerTransactionId?: string | null; status?: string; currency: string; amount: number; paidAt?: string | null }
+export interface UpdatePaymentDto { status?: string; providerTransactionId?: string | null; paidAt?: string | null }
+export interface CouponDto { id: string; code: string; description: string | null; discountType: string; discountValue: number; maxRedemptions: number | null; perUserLimit: number | null; startsAt: string | null; expiresAt: string | null; isActive: boolean; createdAt: string; updatedAt: string }
+export interface CreateCouponDto { code: string; description?: string | null; discountType: string; discountValue: number; maxRedemptions?: number | null; perUserLimit?: number | null; startsAt?: string | null; expiresAt?: string | null; isActive?: boolean }
+export interface UpdateCouponDto extends Partial<CreateCouponDto> {}
+export interface GiftCardDto { id: string; purchaserId: string | null; redeemedById: string | null; currency: string; initialBalance: number; currentBalance: number; expiresAt: string | null; redeemedAt: string | null; createdAt: string; updatedAt: string }
+export interface CreateGiftCardDto { code: string; purchaserId?: string | null; currency: string; initialBalance: number; expiresAt?: string | null }
+export interface RedeemGiftCardDto { code: string; amount?: number }
+export interface SubscriptionDto { id: string; userId: string; courseId: string | null; bundleId: string | null; provider: string | null; providerSubscriptionId: string | null; status: string; startsAt: string; currentPeriodStart: string | null; currentPeriodEnd: string | null; canceledAt: string | null; createdAt: string; updatedAt: string }
+export interface CreateSubscriptionDto { userId: string; courseId?: string | null; bundleId?: string | null; provider?: string | null; providerSubscriptionId?: string | null; status?: string; startsAt?: string; currentPeriodStart?: string | null; currentPeriodEnd?: string | null }
+export interface InvoiceDto { id: string; userId: string; orderId: string | null; subscriptionId: string | null; invoiceNumber: string; status: string; currency: string; subtotal: number; tax: number; total: number; dueAt: string | null; paidAt: string | null; createdAt: string; updatedAt: string }
+export interface CreateInvoiceDto { userId: string; orderId?: string | null; subscriptionId?: string | null; status?: string; currency: string; subtotal: number; tax?: number; total: number; dueAt?: string | null; paidAt?: string | null }
+export interface RefundDto { id: string; orderId: string; paymentId: string | null; userId: string; providerRefundId: string | null; status: string; reason: string | null; currency: string; amount: number; refundedAt: string | null; createdAt: string; updatedAt: string }
+export interface CreateRefundDto { orderId: string; paymentId?: string | null; providerRefundId?: string | null; status?: string; reason?: string | null; currency: string; amount: number; refundedAt?: string | null }
+export interface CommerceStatisticsDto { totalOrders: number; ordersByStatus: Array<{ status: string; count: number }>; totalRevenue: number; totalPayments: number; paymentsByStatus: Array<{ status: string; count: number }>; totalCoupons: number; totalGiftCards: number; totalSubscriptions: number; subscriptionsByStatus: Array<{ status: string; count: number }>; totalInvoices: number; totalRefunds: number; refundedAmount: number }

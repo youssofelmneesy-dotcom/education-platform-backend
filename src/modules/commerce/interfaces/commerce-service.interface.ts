@@ -1,0 +1,10 @@
+import type { CommerceStatisticsDto, CouponDto, CreateCouponDto, CreateGiftCardDto, CreateInvoiceDto, CreateOrderDto, CreatePaymentDto, CreateRefundDto, CreateSubscriptionDto, GiftCardDto, InvoiceDto, OrderDto, PaginationQueryDto, RedeemGiftCardDto, RefundDto, SubscriptionDto, UpdateCouponDto, UpdateOrderDto, UpdatePaymentDto } from "../dto/index.js";
+export interface ICommerceService {
+  createOrder(tenantId: string, userId: string, data: CreateOrderDto): Promise<OrderDto>; listOrders(tenantId: string, query: PaginationQueryDto): Promise<any>; getOrder(id: string, tenantId: string): Promise<OrderDto>; updateOrder(id: string, tenantId: string, data: UpdateOrderDto): Promise<OrderDto>; deleteOrder(id: string, tenantId: string): Promise<void>;
+  createPayment(tenantId: string, data: CreatePaymentDto): Promise<any>; updatePayment(id: string, tenantId: string, data: UpdatePaymentDto): Promise<any>; listPayments(tenantId: string, query: PaginationQueryDto): Promise<any>;
+  createCoupon(tenantId: string, data: CreateCouponDto): Promise<CouponDto>; updateCoupon(id: string, tenantId: string, data: UpdateCouponDto): Promise<CouponDto>; listCoupons(tenantId: string, query: PaginationQueryDto): Promise<any>; deleteCoupon(id: string, tenantId: string): Promise<void>;
+  createGiftCard(tenantId: string, data: CreateGiftCardDto): Promise<GiftCardDto>; redeemGiftCard(tenantId: string, userId: string, data: RedeemGiftCardDto): Promise<GiftCardDto>; listGiftCards(tenantId: string, query: PaginationQueryDto): Promise<any>;
+  createSubscription(tenantId: string, data: CreateSubscriptionDto): Promise<SubscriptionDto>; cancelSubscription(id: string, tenantId: string): Promise<SubscriptionDto>; listSubscriptions(tenantId: string, query: PaginationQueryDto): Promise<any>;
+  createInvoice(tenantId: string, data: CreateInvoiceDto): Promise<InvoiceDto>; listInvoices(tenantId: string, query: PaginationQueryDto): Promise<any>;
+  createRefund(tenantId: string, userId: string, data: CreateRefundDto): Promise<RefundDto>; listRefunds(tenantId: string, query: PaginationQueryDto): Promise<any>; getStatistics(tenantId: string): Promise<CommerceStatisticsDto>;
+}
