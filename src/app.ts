@@ -4,6 +4,7 @@ import { assessmentRouter } from "./modules/assessments/routes/index.js";
 import { authRouter } from "./modules/auth/routes/index.js";
 import { categoriesRouter } from "./modules/categories/routes/index.js";
 import { coursesRouter } from "./modules/courses/routes/index.js";
+import { learningOperationsRouter } from "./modules/learning-operations/routes/index.js";
 import { lessonsRouter } from "./modules/lessons/routes/index.js";
 import { videosRouter } from "./modules/videos/routes/index.js";
 import { profilesRouter } from "./modules/profiles/routes/index.js";
@@ -34,6 +35,7 @@ app.use("/api/videos", videosRouter);
 app.use("/api/learning", studentLearningRouter);
 app.use("/api/question-bank", questionBankRouter);
 app.use("/api/assessments", assessmentRouter);
+app.use("/api/learning-operations", learningOperationsRouter);
 
 // Health Check
 app.get("/", (_req, res) => {

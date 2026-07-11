@@ -1,0 +1,32 @@
+import type { AssignmentListQueryDto, CertificateListQueryDto, CreateAssignmentDto, CreateCertificateTemplateDto, CreateRubricDto, CreateSubmissionDto, GenerateCertificateDto, GradeSubmissionDto, UpdateAssignmentDto, UpdateCertificateTemplateDto, UpdateRubricDto, UpdateSubmissionDto } from "../dto/index.js";
+export interface ILearningOperationsRepository {
+  relatedAssignmentResourcesExist(tenantId: string, data: { courseId?: string; lessonId?: string | null }): Promise<boolean>;
+  certificateResourcesExist(tenantId: string, data: { courseId?: string; userId?: string; templateId?: string | null }): Promise<boolean>;
+  createAssignment(tenantId: string, createdById: string | null, data: CreateAssignmentDto): Promise<any>;
+  listAssignments(tenantId: string, query: AssignmentListQueryDto): Promise<{ assignments: any[]; total: number }>;
+  findAssignmentById(id: string, tenantId: string, includeDeleted?: boolean): Promise<any | null>;
+  updateAssignment(id: string, tenantId: string, data: UpdateAssignmentDto): Promise<any | null>;
+  softDeleteAssignment(id: string, tenantId: string): Promise<boolean>;
+  restoreAssignment(id: string, tenantId: string): Promise<any | null>;
+  createSubmission(assignmentId: string, userId: string, tenantId: string, data: CreateSubmissionDto): Promise<any>;
+  updateSubmission(submissionId: string, userId: string | null, tenantId: string, data: UpdateSubmissionDto): Promise<any | null>;
+  submitSubmission(submissionId: string, userId: string, tenantId: string): Promise<any | null>;
+  findSubmissionById(submissionId: string, userId: string | null, tenantId: string): Promise<any | null>;
+  listMySubmissions(userId: string, tenantId: string): Promise<any[]>;
+  listAssignmentSubmissions(assignmentId: string, tenantId: string): Promise<any[]>;
+  gradeSubmission(submissionId: string, graderId: string | null, tenantId: string, data: GradeSubmissionDto): Promise<any | null>;
+  createRubric(assignmentId: string, tenantId: string, data: CreateRubricDto): Promise<any>;
+  listRubrics(assignmentId: string, tenantId: string): Promise<any[]>;
+  updateRubric(assignmentId: string, rubricId: string, tenantId: string, data: UpdateRubricDto): Promise<any | null>;
+  deleteRubric(assignmentId: string, rubricId: string, tenantId: string): Promise<boolean>;
+  createTemplate(tenantId: string, data: CreateCertificateTemplateDto): Promise<any>;
+  listTemplates(tenantId: string): Promise<any[]>;
+  updateTemplate(id: string, tenantId: string, data: UpdateCertificateTemplateDto): Promise<any | null>;
+  deleteTemplate(id: string, tenantId: string): Promise<boolean>;
+  generateCertificate(tenantId: string, certificateNumber: string, verificationCode: string, data: GenerateCertificateDto): Promise<any>;
+  findCertificateByNumber(certificateNumber: string, tenantId?: string): Promise<any | null>;
+  listCertificates(tenantId: string, query: CertificateListQueryDto): Promise<{ certificates: any[]; total: number }>;
+  revokeCertificate(id: string, tenantId: string): Promise<any | null>;
+  verifyCertificate(verificationCode: string): Promise<any | null>;
+  getStatistics(tenantId: string): Promise<any>;
+}
