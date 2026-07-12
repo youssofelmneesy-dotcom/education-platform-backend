@@ -11,7 +11,7 @@
     /* =========================
        Project Structure
     ========================= */
-    "rootDir": "./src",
+    "baseUrl": ".",
     "outDir": "./dist",
 
     /* =========================
@@ -72,12 +72,11 @@
     "emitDecoratorMetadata": false
   },
 
-  "include": ["src/**/*"],
+  "include": ["src/**/*", "tests/**/*"],
 
   "exclude": [
     "node_modules",
     "dist",
-    "tests",
     "prisma.config.ts"
   ]
 }

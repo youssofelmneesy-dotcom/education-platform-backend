@@ -38,7 +38,7 @@ export const httpConfig = {
   cors: {
     credentials: true,
     origin(origin, callback) {
-      if (!origin || allowedOrigins.length === 0 || allowedOrigins.includes(origin)) {
+      if (!origin || allowedOrigins.includes(origin) || (allowedOrigins.length === 0 && env.NODE_ENV !== "production")) {
         callback(null, true);
         return;
       }

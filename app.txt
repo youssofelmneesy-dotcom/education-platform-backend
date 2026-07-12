@@ -1,0 +1,626 @@
+yousefelfaidy@Mac Back End  % npm run lint
+
+> back-end@1.0.0 lint
+> eslint .
+
+
+/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /src/config/env.ts
+  34:3  warning  Unexpected console statement  no-console
+  35:3  warning  Unexpected console statement  no-console
+
+/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /src/modules/assessments/dto/assessment.dto.ts
+  18:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /src/modules/commerce/controllers/commerce.controller.ts
+  15:217  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  21:223  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  24:220  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  28:227  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  31:238  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  33:223  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  35:220  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /src/modules/commerce/dto/commerce.dto.ts
+   6:183  error  Unexpected any. Specify a different type                          @typescript-eslint/no-explicit-any
+  11:18   error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /src/modules/commerce/interfaces/commerce-repository.interface.ts
+   3:101  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   4:78   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   5:56   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   6:76   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   8:68   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   9:80   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  10:82   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  11:66   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  12:78   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  13:80   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  15:88   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  16:104  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  17:84   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  18:78   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  19:61   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  20:92   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  21:91   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  22:82   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  23:82   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  24:80   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  25:44   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /src/modules/commerce/interfaces/commerce-service.interface.ts
+  3:156  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  4:68   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  4:151  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  4:224  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  5:231  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  6:249  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  7:244  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  8:148  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  9:160  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /src/modules/commerce/repositories/commerce.repository.ts
+  97:29   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  97:119  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /src/modules/commerce/services/commerce.service.ts
+  19:160  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  23:168  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  26:184  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  28:164  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  30:160  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  34:23   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  35:24   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  36:26   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  37:30   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  38:25   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  39:24   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /src/modules/learning-operations/dto/learning-operations.dto.ts
+   5:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+  19:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+  23:18  error  An interface declaring no members is equivalent to its supertype  @typescript-eslint/no-empty-object-type
+
+/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /src/modules/learning-operations/interfaces/learning-operations-repository.interface.ts
+   5:102  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   6:92   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   7:87   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+   8:86   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  10:60   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  11:112  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  12:119  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  13:85   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  14:94   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  15:64   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  16:78   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  17:119  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  18:88   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  19:64   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  20:106  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  22:81   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  23:44   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  24:93   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  26:133  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  27:82   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  28:95   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  29:60   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  30:56   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  31:44   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /src/modules/learning-operations/services/learning-operations.service.ts
+  140:73   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  141:31   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  142:31   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  142:247  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  143:26   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  144:27   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  145:29   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  146:32   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /src/modules/lesson-attachments/interfaces/lesson-attachments-repository.interface.ts
+  4:77   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  5:51   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  6:63   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  7:122  error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+  8:93   error  Unexpected any. Specify a different type  @typescript-eslint/no-explicit-any
+
+/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /src/server.ts
+  7:3  warning  Unexpected console statement  no-console
+
+/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /src/shared/utils/logger.ts
+   9:5  warning  Unexpected console statement  no-console
+  13:5  warning  Unexpected console statement  no-console
+  17:5  warning  Unexpected console statement  no-console
+  22:7  warning  Unexpected console statement  no-console
+
+/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /tests/integration/auth/auth.login.test.ts
+  5:10  error  'createUserFixture' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /tests/integration/auth/auth.register.test.ts
+  5:56  error  'createWeakPasswordFixture' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /tests/setup/global-setup.ts
+  25:7   warning  Unused eslint-disable directive (no problems were reported from '@typescript-eslint/no-unused-vars')
+  28:14  error    'e' is defined but never used                                                                         @typescript-eslint/no-unused-vars
+  31:7   warning  Unused eslint-disable directive (no problems were reported from 'no-await-in-loop')
+
+/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /tests/setup/global-teardown.ts
+  6:12  error  'e' is defined but never used  @typescript-eslint/no-unused-vars
+
+/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /tests/setup/resetDb.ts
+  2:25  error  'disconnectPrisma' is defined but never used. Allowed unused vars must match /^_/u  @typescript-eslint/no-unused-vars
+
+/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /vitest.config.ts
+  0:0  error  Parsing error: "parserOptions.project" has been provided for @typescript-eslint/parser.
+The file was not found in any of the provided project(s): vitest.config.ts
+
+/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /vitest.coverage.config.ts
+  0:0  error  Parsing error: "parserOptions.project" has been provided for @typescript-eslint/parser.
+The file was not found in any of the provided project(s): vitest.coverage.config.ts
+
+/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /vitest.integration.config.ts
+  0:0  error  Parsing error: "parserOptions.project" has been provided for @typescript-eslint/parser.
+The file was not found in any of the provided project(s): vitest.integration.config.ts
+
+/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /vitest.smoke.config.ts
+  0:0  error  Parsing error: "parserOptions.project" has been provided for @typescript-eslint/parser.
+The file was not found in any of the provided project(s): vitest.smoke.config.ts
+
+/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /vitest.unit.config.ts
+  0:0  error  Parsing error: "parserOptions.project" has been provided for @typescript-eslint/parser.
+The file was not found in any of the provided project(s): vitest.unit.config.ts
+
+✖ 112 problems (103 errors, 9 warnings)
+  0 errors and 2 warnings potentially fixable with the `--fix` option.
+
+yousefelfaidy@Mac Back End  % 
+
+
+
+
+
+
+
+
+
+
+
+
+
+yousefelfaidy@Mac Back End  % npm run build
+
+> back-end@1.0.0 build
+> tsc
+
+tsconfig.json:14:5 - error TS5101: Option 'baseUrl' is deprecated and will stop functioning in TypeScript 7.0. Specify compilerOption '"ignoreDeprecations": "6.0"' to silence this error.
+  Visit https://aka.ms/ts6 for migration information.
+
+14     "baseUrl": ".",
+       ~~~~~~~~~
+
+
+Found 1 error in tsconfig.json:14
+
+yousefelfaidy@Mac Back End  % 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+yousefelfaidy@Mac Back End  % npm run test:unit
+
+> back-end@1.0.0 test:unit
+> NODE_ENV=test vitest run --config vitest.unit.config.ts
+
+
+ RUN  v4.1.10 /Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End 
+
+ ✓ tests/unit/utils/logger.test.ts (5 tests) 10ms
+ ✓ tests/unit/utils/api-response.test.ts (4 tests) 8ms
+ ✓ tests/unit/utils/async-handler.test.ts (2 tests) 8ms
+ ✓ tests/unit/utils/authorization.test.ts (7 tests) 5ms
+stderr | tests/unit/validators/env.test.ts > environment validator > should exit when required environment values are missing
+❌ Invalid environment variables
+{
+  _errors: [],
+  DATABASE_URL: { _errors: [ 'Invalid input: expected string, received undefined' ] }
+}
+
+ ✓ tests/unit/validators/env.test.ts (2 tests) 145ms
+ ✓ tests/unit/validators/auth.validators.test.ts (18 tests) 17ms
+ ✓ tests/unit/services/auth.service.test.ts (9 tests) 15ms
+
+ Test Files  7 passed (7)
+      Tests  47 passed (47)
+   Start at  00:37:49
+   Duration  475ms (transform 558ms, setup 0ms, import 893ms, tests 207ms, environment 1ms)
+
+yousefelfaidy@Mac Back End  % 
+
+
+
+
+
+
+
+
+
+
+yousefelfaidy@Mac Back End  % npm run test:integration
+
+> back-end@1.0.0 test:integration
+> NODE_ENV=test vitest run --config vitest.integration.config.ts
+
+
+ RUN  v4.1.10 /Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End 
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma config detected, skipping environment variable loading.
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v6.15.0) to ./node_modules/@prisma/client in 356ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma config detected, skipping environment variable loading.
+Prisma schema loaded from prisma/schema.prisma
+Datasource "db": PostgreSQL database "education_platform", schema "public" at "localhost:5432"
+
+2 migrations found in prisma/migrations
+
+
+No pending migrations to apply.
+◇ injected env (4) from env.test // tip: ⌘ custom filepath { path: '/custom/path/.env' }
+stdout | tests/integration/auth/auth.refresh.test.ts
+◇ injected env (0) from env.test // tip: ◈ encrypted .env [www.dotenvx.com]
+
+stdout | tests/integration/auth/auth.logout.test.ts
+◇ injected env (0) from env.test // tip: ⌘ enable debugging { debug: true }
+
+stdout | tests/integration/auth/auth.register.test.ts
+◇ injected env (0) from env.test // tip: ⌘ suppress logs { quiet: true }
+
+stdout | tests/integration/auth/auth.login.test.ts
+◇ injected env (0) from env.test // tip: ⌁ auth for agents [www.vestauth.com]
+
+ ✓ tests/integration/auth/auth.register.test.ts (20 tests) 5126ms
+       ✓ should successfully register a new user with valid data  826ms
+       ✓ should reject duplicate email with 409 conflict error  531ms
+       ✓ should accept firstName with exactly 2 characters  457ms
+       ✓ should accept firstName with exactly 50 characters  535ms
+       ✓ should normalize email to lowercase  1022ms
+       ✓ should hash password and not store plaintext  418ms
+ ✓ tests/integration/auth/auth.login.test.ts (12 tests) 9885ms
+       ✓ should successfully login with valid credentials and return tokens  1959ms
+       ✓ should return user details in login response  1528ms
+       ✓ should reject login with wrong password  1398ms
+       ✓ should normalize email to lowercase for login  1341ms
+       ✓ should persist refresh token to database  1260ms
+       ✓ should return different tokens on each login  2033ms
+ ✓ tests/integration/auth/auth.logout.test.ts (9 tests) 10426ms
+       ✓ should successfully logout with valid refresh token  2483ms
+       ✓ should return 204 No Content on successful logout  2340ms
+       ✓ should revoke refresh token after logout  1767ms
+       ✓ should reject logout with already revoked token  1624ms
+       ✓ should allow revoking specific refresh token  1625ms
+ ✓ tests/integration/auth/auth.refresh.test.ts (11 tests) 15450ms
+       ✓ should successfully refresh tokens with valid refresh token  2889ms
+       ✓ should rotate refresh token on refresh  2711ms
+       ✓ should provide new access token on refresh  2060ms
+       ✓ should reject revoked refresh token  1624ms
+       ✓ should reject refresh token from another user  3245ms
+       ✓ should have correct response structure  2003ms
+
+ Test Files  4 passed (4)
+      Tests  52 passed (52)
+   Start at  00:38:22
+   Duration  23.19s (transform 4.15s, setup 494ms, import 8.68s, tests 40.89s, environment 1ms)
+
+yousefelfaidy@Mac Back End  % 
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+yousefelfaidy@Mac Back End  % npm run test:smoke
+
+> back-end@1.0.0 test:smoke
+> NODE_ENV=test vitest run --config vitest.smoke.config.ts
+
+
+ RUN  v4.1.10 /Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End 
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma config detected, skipping environment variable loading.
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v6.15.0) to ./node_modules/@prisma/client in 311ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Need your database queries to be 1000x faster? Accelerate offers you that and more: https://pris.ly/tip-2-accelerate
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma config detected, skipping environment variable loading.
+Prisma schema loaded from prisma/schema.prisma
+Datasource "db": PostgreSQL database "education_platform", schema "public" at "localhost:5432"
+
+2 migrations found in prisma/migrations
+
+
+No pending migrations to apply.
+◇ injected env (4) from env.test // tip: ◈ secrets for agents [www.dotenvx.com]
+stdout | tests/smoke/smoke.test.ts
+◇ injected env (0) from env.test // tip: ◈ encrypted .env [www.dotenvx.com]
+
+ ✓ tests/smoke/smoke.test.ts (1 test) 480ms
+   ✓ Testing environment smoke (1)
+     ✓ should run in test env and connect to the database 3ms
+
+ Test Files  1 passed (1)
+      Tests  1 passed (1)
+   Start at  00:39:19
+   Duration  5.59s (transform 48ms, setup 134ms, import 17ms, tests 480ms, environment 0ms)
+
+yousefelfaidy@Mac Back End  %
+
+
+
+
+
+
+
+
+
+
+
+
+
+yousefelfaidy@Mac Back End  % npm run test:api
+
+> back-end@1.0.0 test:api
+> node ./scripts/run-api-tests.mjs cli
+
+◇ injected env (9) from env.test // tip: ⌘ enable debugging { debug: true }
+🚀 Server is running on http://localhost:4001
+Need to install the following packages:
+newman@6.2.2
+Ok to proceed? (y) y
+npm warn deprecated har-validator@5.1.5: this library is no longer supported
+npm warn deprecated uuid@3.4.0: Please upgrade  to version 7 or higher.  Older versions may use Math.random() in certain circumstances, which is known to be problematic.  See https://v8.dev/blog/math-random for details.
+npm warn deprecated @faker-js/faker@5.5.3: Please update to a newer version.
+(node:63741) [DEP0176] DeprecationWarning: fs.F_OK is deprecated, use fs.constants.F_OK instead
+(Use `node --trace-deprecation ...` to show where the warning was created)
+error: could not load environment
+  ENOENT: no such file or directory, open '/Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End /postman/Education Platform Local.postman_environment.json'
+
+Process exited with code 1
+yousefelfaidy@Mac Back End  % 
+
+
+
+
+
+
+
+
+
+
+yousefelfaidy@Mac Back End  % npm run coverage
+
+> back-end@1.0.0 coverage
+> NODE_ENV=test vitest run --config vitest.coverage.config.ts --coverage
+
+
+ RUN  v4.1.10 /Users/yousefelfaidy/Desktop/SYSOUT/Project/Teching Platforms/Back End 
+      Coverage enabled with v8
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma config detected, skipping environment variable loading.
+Prisma schema loaded from prisma/schema.prisma
+
+✔ Generated Prisma Client (v6.15.0) to ./node_modules/@prisma/client in 346ms
+
+Start by importing your Prisma Client (See: https://pris.ly/d/importing-client)
+
+Tip: Want to turn off tips and other hints? https://pris.ly/tip-4-nohints
+
+Loaded Prisma config from prisma.config.ts.
+
+Prisma config detected, skipping environment variable loading.
+Prisma schema loaded from prisma/schema.prisma
+Datasource "db": PostgreSQL database "education_platform", schema "public" at "localhost:5432"
+
+2 migrations found in prisma/migrations
+
+
+No pending migrations to apply.
+◇ injected env (4) from env.test // tip: ◈ secrets for agents [www.dotenvx.com]
+stdout | tests/integration/auth/auth.register.test.ts
+◇ injected env (0) from env.test // tip: ⌘ override existing { override: true }
+
+stdout | tests/unit/validators/auth.validators.test.ts
+◇ injected env (0) from env.test // tip: ◈ secrets for agents [www.dotenvx.com]
+
+stdout | tests/integration/auth/auth.logout.test.ts
+◇ injected env (0) from env.test // tip: ◈ secrets for agents [www.dotenvx.com]
+
+stdout | tests/integration/auth/auth.refresh.test.ts
+◇ injected env (0) from env.test // tip: ◈ secrets for agents [www.dotenvx.com]
+
+stdout | tests/smoke/smoke.test.ts
+◇ injected env (0) from env.test // tip: ⌁ auth for agents [www.vestauth.com]
+
+stdout | tests/integration/auth/auth.login.test.ts
+◇ injected env (0) from env.test // tip: ⌘ enable debugging { debug: true }
+
+stdout | tests/unit/validators/env.test.ts
+◇ injected env (0) from env.test // tip: ⌘ suppress logs { quiet: true }
+
+stderr | tests/unit/validators/env.test.ts > environment validator > should exit when required environment values are missing
+❌ Invalid environment variables
+{
+  _errors: [],
+  DATABASE_URL: { _errors: [ 'Invalid input: expected string, received undefined' ] }
+}
+
+ ✓ tests/unit/validators/env.test.ts (2 tests) 1162ms
+stdout | tests/unit/services/auth.service.test.ts
+◇ injected env (0) from env.test // tip: ⌘ override existing { override: true }
+
+ ✓ tests/smoke/smoke.test.ts (1 test) 1692ms
+stdout | tests/unit/utils/logger.test.ts
+◇ injected env (0) from env.test // tip: ◈ secrets for agents [www.dotenvx.com]
+
+ ✓ tests/unit/validators/auth.validators.test.ts (18 tests) 2105ms
+stdout | tests/unit/utils/api-response.test.ts
+◇ injected env (0) from env.test // tip: ⌘ enable debugging { debug: true }
+
+ ✓ tests/unit/services/auth.service.test.ts (9 tests) 1020ms
+stdout | tests/unit/utils/async-handler.test.ts
+◇ injected env (0) from env.test // tip: ⌁ auth for agents [www.vestauth.com]
+
+ ✓ tests/unit/utils/logger.test.ts (5 tests) 884ms
+stdout | tests/unit/utils/authorization.test.ts
+◇ injected env (0) from env.test // tip: ⌘ suppress logs { quiet: true }
+
+ ✓ tests/unit/utils/api-response.test.ts (4 tests) 2176ms
+ ✓ tests/unit/utils/async-handler.test.ts (2 tests) 2129ms
+ ✓ tests/unit/utils/authorization.test.ts (7 tests) 2146ms
+ ❯ tests/integration/auth/auth.register.test.ts (20 tests | 1 failed) 5196ms
+       × should successfully register a new user with valid data 1749ms
+       ✓ should reject duplicate email with 409 conflict error  505ms
+       ✓ should reject invalid email format 5ms
+       ✓ should reject weak password (less than 8 characters) 3ms
+       ✓ should reject password without uppercase letter 3ms
+       ✓ should reject password without lowercase letter 3ms
+       ✓ should reject password without number 3ms
+       ✓ should reject password without special character 5ms
+       ✓ should reject mismatched confirm password 3ms
+       ✓ should reject missing firstName 3ms
+       ✓ should reject missing lastName 4ms
+       ✓ should reject missing email 4ms
+       ✓ should reject missing password 4ms
+       ✓ should reject missing confirmPassword 3ms
+       ✓ should validate firstName length (minimum 2 characters) 3ms
+       ✓ should validate firstName length (maximum 50 characters) 3ms
+       ✓ should accept firstName with exactly 2 characters  401ms
+       ✓ should accept firstName with exactly 50 characters  403ms
+       ✓ should normalize email to lowercase  401ms
+       ✓ should hash password and not store plaintext  405ms
+ ❯ tests/integration/auth/auth.logout.test.ts (9 tests | 1 failed) 9667ms
+       × should successfully logout with valid refresh token 1298ms
+       ✓ should return 204 No Content on successful logout  1688ms
+       ✓ should revoke refresh token after logout  1639ms
+       ✓ should reject logout with invalid refresh token 4ms
+       ✓ should reject logout with malformed refresh token 2ms
+       ✓ should reject logout with missing refresh token 2ms
+       ✓ should reject logout with empty refresh token 2ms
+       ✓ should reject logout with already revoked token  1661ms
+       ✓ should allow revoking specific refresh token  1630ms
+ ✓ tests/integration/auth/auth.login.test.ts (12 tests) 10481ms
+       ✓ should successfully login with valid credentials and return tokens  1743ms
+       ✓ should return user details in login response  1212ms
+       ✓ should reject login with wrong password  837ms
+       ✓ should normalize email to lowercase for login  1226ms
+       ✓ should persist refresh token to database  1243ms
+       ✓ should return different tokens on each login  2015ms
+ ❯ tests/integration/auth/auth.refresh.test.ts (11 tests | 1 failed) 14097ms
+       × should successfully refresh tokens with valid refresh token 1767ms
+       ✓ should rotate refresh token on refresh  2321ms
+       ✓ should provide new access token on refresh  2062ms
+       ✓ should reject invalid refresh token 5ms
+       ✓ should reject malformed refresh token (not JWT format) 2ms
+       ✓ should reject revoked refresh token  1659ms
+       ✓ should reject refresh token from another user  3235ms
+       ✓ should reject missing refresh token 4ms
+       ✓ should reject empty refresh token 3ms
+       ✓ should reject expired refresh token 1ms
+       ✓ should have correct response structure  2015ms
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯ Failed Tests 3 ⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯
+
+ FAIL  tests/integration/auth/auth.logout.test.ts > Auth Module - Logout > POST /api/auth/logout > should successfully logout with valid refresh token
+TypeError: Cannot read properties of undefined (reading 'refreshToken')
+ ❯ tests/integration/auth/auth.logout.test.ts:32:52
+     30|         .send(createLoginFixture(testEmail, t…
+     31|
+     32|       const refreshToken = loginResponse.body…
+       |                                                    ^
+     33|
+     34|       // Logout
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[1/3]⎯
+
+ FAIL  tests/integration/auth/auth.refresh.test.ts > Auth Module - Refresh Token > POST /api/auth/refresh > should successfully refresh tokens with valid refresh token
+AssertionError: expected 401 to be 200 // Object.is equality
+
+- Expected
++ Received
+
+- 200
++ 401
+
+ ❯ tests/integration/auth/auth.refresh.test.ts:32:36
+     30|         .send(createLoginFixture(testEmail, t…
+     31|
+     32|       expect(loginResponse.status).toBe(200);
+       |                                    ^
+     33|       const refreshToken = loginResponse.body…
+     34|
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[2/3]⎯
+
+ FAIL  tests/integration/auth/auth.register.test.ts > Auth Module - Registration > POST /api/auth/register > should successfully register a new user with valid data
+AssertionError: expected undefined to be 'John' // Object.is equality
+
+- Expected:
+"John"
+
++ Received:
+undefined
+
+ ❯ tests/integration/auth/auth.register.test.ts:48:35
+     46|       const userInDb = await findUserByEmail(…
+     47|       expect(userInDb).toBeDefined();
+     48|       expect(userInDb?.firstName).toBe(userDa…
+       |                                   ^
+     49|       expect(userInDb?.lastName).toBe(userDat…
+     50|     });
+
+⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯⎯[3/3]⎯
+
+
+ Test Files  3 failed | 9 passed (12)
+      Tests  3 failed | 97 passed (100)
+   Start at  00:41:41
+   Duration  22.29s (transform 4.67s, setup 1.34s, import 9.20s, tests 52.76s, environment 2ms)
+
+yousefelfaidy@Mac Back End  % 

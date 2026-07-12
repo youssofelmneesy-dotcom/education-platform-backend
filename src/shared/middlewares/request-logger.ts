@@ -11,7 +11,7 @@ export function requestLogger(req: Request, res: Response, next: NextFunction): 
     logger.info("HTTP request completed", {
       requestId: req.id,
       method: req.method,
-      path: req.originalUrl,
+      path: req.path,
       status: res.statusCode,
       durationMs: Math.round(durationMs),
     });

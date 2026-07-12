@@ -6,7 +6,12 @@ import { CommerceService } from "../services/index.js";
 
 export class CommerceController {
   constructor(private readonly service: ICommerceService = new CommerceService()) {}
-  createOrder = async (req: Request, res: Response): Promise<void> => { const { userId, tenantId } = this.auth(req); sendSuccess(res, 201, "Order created successfully", await this.service.createOrder(tenantId, userId, req.body)); };
+  createOrder = async (req: Request, res: Response): Promise<void> => {
+    const { userId, tenantId } = this.auth(req);
+    const orderData = { ...req.body };
+    delete orderData.userId;
+    sendSuccess(res, 201, "Order created successfully", await this.service.createOrder(tenantId, userId, orderData));
+  };
   listOrders = async (req: Request, res: Response): Promise<void> => { const { tenantId } = this.auth(req); sendSuccess(res, 200, "Orders retrieved successfully", await this.service.listOrders(tenantId, req.query as any)); };
   getOrder = async (req: Request, res: Response): Promise<void> => { const { tenantId } = this.auth(req); sendSuccess(res, 200, "Order retrieved successfully", await this.service.getOrder(this.param(req, "id"), tenantId)); };
   updateOrder = async (req: Request, res: Response): Promise<void> => { const { tenantId } = this.auth(req); sendSuccess(res, 200, "Order updated successfully", await this.service.updateOrder(this.param(req, "id"), tenantId, req.body)); };

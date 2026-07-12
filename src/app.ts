@@ -1,4 +1,7 @@
 import express from "express";
+import compression from "compression";
+import cors from "cors";
+import helmet from "helmet";
 
 import { assessmentRouter } from "./modules/assessments/routes/index.js";
 import { authRouter } from "./modules/auth/routes/index.js";
@@ -15,13 +18,29 @@ import { rolesRouter } from "./modules/roles/routes/index.js";
 import { studentLearningRouter } from "./modules/student-learning/routes/index.js";
 import { tagsRouter } from "./modules/tags/routes/index.js";
 import { usersRouter } from "./modules/users/routes/index.js";
-import { errorHandler } from "./shared/middlewares/index.js";
+import { swaggerRouter } from "./docs/swagger.router.js";
+import { httpConfig } from "./shared/config/index.js";
+import { errorHandler, globalRateLimiter, notFoundHandler, requestId, requestLogger } from "./shared/middlewares/index.js";
 
 const app = express();
 
-// Built-in Middlewares
-app.use(express.json());
-app.use(express.urlencoded({ extended: true }));
+app.set("trust proxy", httpConfig.trustProxy);
+
+app.use(requestId);
+
+// Disable verbose request logging in tests
+if (process.env.NODE_ENV !== "test") {
+  app.use(requestLogger);
+}
+app.use(helmet());
+app.use(cors(httpConfig.cors));
+app.use(compression());
+// Disable rate limiting during tests to avoid flakiness
+if (process.env.NODE_ENV !== "test") {
+  app.use(globalRateLimiter);
+}
+app.use(express.json({ limit: httpConfig.requestBodyLimit }));
+app.use(express.urlencoded({ extended: true, limit: httpConfig.urlencodedBodyLimit }));
 
 app.use("/api/auth", authRouter);
 app.use("/api/users", usersRouter);
@@ -38,6 +57,7 @@ app.use("/api/question-bank", questionBankRouter);
 app.use("/api/assessments", assessmentRouter);
 app.use("/api/learning-operations", learningOperationsRouter);
 app.use("/api/commerce", commerceRouter);
+app.use("/api", swaggerRouter);
 
 // Health Check
 app.get("/", (_req, res) => {
@@ -47,6 +67,7 @@ app.get("/", (_req, res) => {
   });
 });
 
+app.use(notFoundHandler);
 app.use(errorHandler);
 
 export default app;

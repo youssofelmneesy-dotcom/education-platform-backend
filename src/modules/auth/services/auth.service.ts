@@ -72,8 +72,17 @@ export function verifyJwt(token: string, secret: string): Record<string, unknown
   const [header, body, signature] = parts;
   const expectedSignature = base64UrlEncode(crypto.createHmac("sha256", secret).update(`${header}.${body}`).digest());
 
-  if (signature !== expectedSignature) {
+  const signatureBuffer = Buffer.from(signature);
+  const expectedSignatureBuffer = Buffer.from(expectedSignature);
+
+  if (signatureBuffer.length !== expectedSignatureBuffer.length || !crypto.timingSafeEqual(signatureBuffer, expectedSignatureBuffer)) {
     throw new Error("Invalid token signature");
+  }
+
+  const parsedHeader = JSON.parse(base64UrlDecode(header)) as Record<string, unknown>;
+
+  if (parsedHeader.alg !== "HS256" || parsedHeader.typ !== "JWT") {
+    throw new Error("Invalid token header");
   }
 
   const payload = JSON.parse(base64UrlDecode(body)) as Record<string, unknown>;
