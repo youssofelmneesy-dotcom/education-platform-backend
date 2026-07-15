@@ -49,6 +49,16 @@ describe("UsersService", () => {
       expect(result.users[0].id).toBe("user-1");
       expect(result.total).toBe(1);
     });
+
+    it("should return empty list when no users found", async () => {
+      repository.listByTenant.mockResolvedValue({ users: [], total: 0 });
+
+      const result = await service.listUsers(tenantId, 1, 10);
+
+      expect(repository.listByTenant).toHaveBeenCalledWith(tenantId, 1, 10);
+      expect(result.users).toHaveLength(0);
+      expect(result.total).toBe(0);
+    });
   });
 
   describe("getUserById", () => {
