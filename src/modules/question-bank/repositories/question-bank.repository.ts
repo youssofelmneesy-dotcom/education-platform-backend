@@ -58,9 +58,9 @@ export class QuestionBankRepository implements IQuestionBankRepository {
   async createQuestion(tenantId: string, createdById: string | null, data: CreateQuestionDto) {
     return prisma.question.create({
       data: {
-        tenantId,
-        createdById,
-        questionBankId: data.questionBankId,
+        tenant: { connect: { id: tenantId } },
+        questionBank: { connect: { tenantId_id: { tenantId, id: data.questionBankId } } },
+        ...(createdById ? { createdBy: { connect: { tenantId_id: { tenantId, id: createdById } } } } : {}),
         type: data.type,
         prompt: data.prompt,
         explanation: data.explanation,
@@ -69,7 +69,7 @@ export class QuestionBankRepository implements IQuestionBankRepository {
         choices: data.choices?.length
           ? {
               create: data.choices.map((choice) => ({
-                tenantId,
+                tenant: { connect: { id: tenantId } },
                 content: choice.content,
                 isCorrect: choice.isCorrect,
                 sortOrder: choice.sortOrder,
