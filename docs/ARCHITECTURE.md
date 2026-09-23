@@ -1,102 +1,465 @@
 # Architecture
 
-## High-Level Architecture
+## Overview
 
-The backend is an Express application written in TypeScript. It is organized by domain modules under `src/modules`, with shared infrastructure under `src/shared`.
+The backend is an Express application written in TypeScript and organized around domain modules under `src/modules`, with shared infrastructure under `src/shared`.
 
-The implemented request path is:
+The architecture separates HTTP handling, application logic, data access, and database infrastructure.
+
+The main request flow is:
 
 ```text
 Client
-  -> Express app
-  -> Global middleware
-  -> Module router
-  -> Route middleware
-  -> Validator
-  -> Controller
-  -> Service
-  -> Repository
-  -> Prisma Client
-  -> PostgreSQL
+  ↓
+Express App
+  ↓
+Global Middleware
+  ↓
+Module Router
+  ↓
+Route Middleware
+  ↓
+Validator
+  ↓
+Controller
+  ↓
+Service
+  ↓
+Repository
+  ↓
+Prisma Client
+  ↓
+PostgreSQL
 ```
 
-The application entrypoint is `src/server.ts`. It imports `src/app.ts`, reads the validated port configuration, and starts the Express server.
+![Architecture Diagram](diagrams/architecture.png)
 
-`src/app.ts` configures global middleware, mounts module routers under `/api`, exposes the Swagger UI infrastructure, defines the root health response, and registers not-found and error handlers.
+---
+
+## Application Entry Points
+
+### `src/server.ts`
+
+The server entrypoint:
+
+* Imports the configured Express application.
+* Reads the validated port configuration.
+* Starts the HTTP server.
+* Handles the server lifecycle and graceful shutdown behavior.
+
+### `src/app.ts`
+
+The Express application configuration:
+
+* Registers global middleware.
+* Configures security-related middleware.
+* Mounts module routers under `/api`.
+* Exposes Swagger UI infrastructure.
+* Defines health endpoints.
+* Registers not-found handling.
+* Registers the centralized error handler.
+
+---
 
 ## Request Lifecycle
 
-1. A request enters the Express app.
-2. Global middleware assigns a request id, optionally logs the request, applies security headers, CORS, compression, rate limiting, and body parsers.
-3. The request reaches a mounted module router.
-4. Protected routes run authentication middleware and permission checks.
-5. Route validators parse `body`, `params`, and `query` with Zod.
-6. Controllers receive validated input and call services.
-7. Services apply application rules and call repositories.
-8. Repositories execute Prisma queries.
-9. Controllers send standardized success responses.
-10. Errors flow into the centralized error handler.
+A typical request moves through the following stages:
+
+### 1. Express Application
+
+The request enters the Express application.
+
+### 2. Global Middleware
+
+Shared middleware handles cross-cutting concerns such as:
+
+* Request IDs
+* Request logging
+* Security headers
+* CORS
+* Compression
+* Rate limiting
+* Request body parsing
+
+### 3. Module Router
+
+The request is routed to the module responsible for the requested domain.
+
+Examples include:
+
+```text
+Auth
+Users
+Courses
+Learning
+Assessments
+Commerce
+```
+
+### 4. Route Middleware
+
+Protected routes may apply:
+
+* Authentication
+* Role checks
+* Permission checks
+
+### 5. Validation
+
+Zod validators validate and normalize:
+
+* Request body
+* Route parameters
+* Query parameters
+
+Validated values replace the corresponding request data before controller logic runs.
+
+### 6. Controller
+
+Controllers handle HTTP-specific concerns.
+
+They:
+
+* Read validated request data.
+* Call the appropriate service.
+* Select the HTTP response status.
+* Return the standardized response shape.
+
+Controllers do not own database queries or business rules.
+
+### 7. Service
+
+Services contain application and business behavior.
+
+Depending on the module, services handle responsibilities such as:
+
+* Duplicate checks
+* Password hashing
+* Token generation
+* Token rotation
+* Ownership checks
+* Status transitions
+* Soft deletes
+* Domain-specific business rules
+
+Where repository interfaces are defined, services depend on those interfaces instead of directly depending on Prisma query syntax.
+
+### 8. Repository
+
+Repositories form the database-access boundary.
+
+They:
+
+* Receive data-access requests from services.
+* Execute Prisma operations.
+* Apply tenant-aware data access where required.
+* Return selected records to the service layer.
+
+This keeps Prisma-specific query logic centralized within the repository layer.
+
+### 9. Prisma and PostgreSQL
+
+Repositories use Prisma Client to communicate with PostgreSQL.
+
+The Prisma schema defines the application's models, relationships, constraints, indexes, tenant relationships, audit fields, and soft-delete fields.
+
+---
 
 ## Layer Responsibilities
 
 ### Routes
 
-Routes compose middleware and controller methods. They define the HTTP method, path, authentication requirement, permission requirement, and validation schemas for each endpoint.
+Routes define:
+
+* HTTP method
+* Endpoint path
+* Middleware composition
+* Authentication requirements
+* Permission requirements
+* Validation schemas
+* Controller mapping
+
+Routes should remain focused on composing the request pipeline.
+
+---
 
 ### Controllers
 
-Controllers handle HTTP-specific behavior:
+Controllers are responsible for HTTP behavior.
 
-- Read request data.
-- Call the correct service method.
-- Choose the response status code.
-- Return a standardized response shape.
+They should:
 
-Controllers should not own database queries or business rules.
+* Read validated input.
+* Call services.
+* Select appropriate response status codes.
+* Return standardized responses.
+
+Controllers should not contain:
+
+* Direct Prisma queries
+* Database access logic
+* Large business rules
+
+---
 
 ### Services
 
-Services contain application behavior. Existing services handle responsibilities such as duplicate checks, password hashing, token generation, token rotation, ownership checks, status transitions, soft deletes, and domain-specific validation beyond Zod shape validation.
+Services contain application and domain behavior.
 
-Services depend on repository interfaces where the module defines them, which keeps business behavior separate from Prisma details.
+They coordinate business operations and use repositories for persistence.
+
+Examples include:
+
+* Authentication flows
+* User operations
+* Ownership validation
+* Token rotation
+* Status changes
+* Soft deletion
+* Domain-specific validation
+
+---
 
 ### Repositories
 
-Repositories are the Prisma boundary. They translate service requests into Prisma operations and return selected records to services.
+Repositories isolate database access.
 
-The pattern keeps controllers and services independent from Prisma query syntax and centralizes tenant-aware database access.
+They are responsible for translating application-level data requests into Prisma operations.
+
+Repositories also provide the main boundary for tenant-aware database queries.
+
+---
 
 ### DTOs
 
-DTO files describe request and response data shapes used by controllers and services. They are TypeScript interfaces or types according to the style of the module.
+DTOs describe request and response data shapes used by modules.
+
+Depending on the module, DTOs are represented as TypeScript interfaces or types.
+
+---
 
 ### Validators
 
-Validators use Zod schemas. The shared `validate` middleware parses and replaces request `body`, `params`, and `query` with validated values before controller logic runs.
+Validators use Zod schemas.
 
-Validation failures are handled by the global error handler as `400` responses.
+The shared validation middleware parses and replaces:
 
-### Shared Components
+```text
+req.body
+req.params
+req.query
+```
 
-Shared infrastructure lives under `src/shared`:
+with validated values before the request reaches controller logic.
 
-- `config`: HTTP configuration derived from validated environment values.
-- `errors`: base operational error classes.
-- `middlewares`: error handler, not-found handler, request id, request logger, rate limiter, and validation middleware.
-- `utils`: response helpers, async handler, logger, and shared utilities.
+Validation failures are converted into standardized `400` responses by the centralized error handler.
 
-## Error Handling Flow
+---
 
-Expected application errors use `AppError` or subclasses such as `UnauthorizedError` and `ForbiddenAppError`. Module-specific errors extend the same operational error model.
+## Multi-Tenancy
 
-The global error handler handles:
+The platform is designed to support multiple tenants within the same backend application.
 
-- Zod validation errors as `400`.
-- `AppError` instances using their configured status code.
-- Prisma known errors such as unique conflicts and missing records.
-- Unknown errors as `500 Internal server error`.
+The authenticated request carries tenant context through the access token:
 
-Responses use the shared error shape:
+```text
+Access Token
+     │
+     └── tenantId
+```
+
+The authorization layer resolves the authenticated user's context, while repositories apply tenant-aware queries where tenant isolation is required.
+
+Conceptually:
+
+```text
+                    ONE BACKEND
+                         │
+             ┌───────────┼───────────┐
+             ↓           ↓           ↓
+          Tenant A    Tenant B    Tenant C
+             │           │           │
+           Data        Data        Data
+```
+
+The important boundary is the data-access layer:
+
+```text
+Request
+   ↓
+Authentication
+   ↓
+Tenant Context
+   ↓
+Authorization
+   ↓
+Service
+   ↓
+Repository
+   ↓
+Tenant-aware Query
+   ↓
+PostgreSQL
+```
+
+For the dedicated tenant model and isolation approach:
+
+[Multi-Tenancy Documentation](MULTI_TENANCY.md)
+
+![Multi-Tenancy Diagram](diagrams/multi-tenancy.png)
+
+---
+
+## Authentication Flow
+
+Authentication is implemented in the Auth module.
+
+### Registration
+
+```text
+Register Request
+      ↓
+Validation
+      ↓
+Email Uniqueness Check
+      ↓
+Password Hashing
+      ↓
+User Creation
+```
+
+### Login
+
+```text
+Login Request
+      ↓
+Validation
+      ↓
+Credential Verification
+      ↓
+Access Token
+      +
+Refresh Token
+      ↓
+Persist Hashed Refresh Token
+```
+
+### Refresh
+
+```text
+Refresh Token
+      ↓
+Validation
+      ↓
+Token Verification
+      ↓
+Stored Hash Comparison
+      ↓
+Rotate Refresh Token
+      ↓
+Issue New Tokens
+```
+
+### Logout
+
+```text
+Refresh Token
+      ↓
+Validation
+      ↓
+Token Verification
+      ↓
+Revoke Stored Refresh Token
+```
+
+Access tokens are HMAC-signed using Node.js `crypto`.
+
+The token payload contains:
+
+```text
+sub
+email
+tenantId
+iat
+exp
+```
+
+---
+
+## Authorization Flow
+
+Protected routes use `authMiddleware`.
+
+The middleware:
+
+1. Reads the `Authorization: Bearer <token>` header.
+2. Verifies the token signature.
+3. Verifies token expiry.
+4. Validates the token payload shape.
+5. Loads the user's authorization context from the database.
+6. Attaches the authentication and authorization context to the request.
+
+The request may receive:
+
+```text
+req.auth
+req.user
+req.userRoles
+req.userPermissions
+```
+
+Authorization middleware then applies the required access rules.
+
+Available authorization helpers include:
+
+```text
+requireRoles
+requirePermissions
+requireAnyPermission
+requireAllPermissions
+```
+
+Permissions are represented as lower-case resource/action keys, for example:
+
+```text
+resource:action
+```
+
+---
+
+## Error Handling
+
+Expected application errors use `AppError` or its subclasses.
+
+Examples include:
+
+```text
+UnauthorizedError
+ForbiddenAppError
+```
+
+Module-specific errors can extend the same operational error model.
+
+The centralized error handler processes:
+
+* Zod validation errors
+* Application errors
+* Known Prisma errors
+* Unknown errors
+
+Validation errors return `400`.
+
+Application errors use their configured status codes.
+
+Known Prisma conflicts and missing-record conditions are mapped into appropriate application responses.
+
+Unknown errors are returned as:
+
+```text
+500 Internal Server Error
+```
+
+A standardized error response follows this general shape:
 
 ```json
 {
@@ -105,34 +468,94 @@ Responses use the shared error shape:
 }
 ```
 
-Validation errors may include an `errors` object.
+Validation errors may additionally include an `errors` object.
 
-## Authentication Flow
+---
 
-Authentication is implemented in the Auth module.
+## Shared Infrastructure
 
-- Register validates input, checks email uniqueness, hashes the password with bcrypt, and creates a user.
-- Login validates credentials, compares the password hash, creates an access token, creates a refresh token, hashes the refresh token secret, and stores it.
-- Refresh validates the refresh token, compares it with the stored hash, rotates the stored token hash, and returns new tokens.
-- Logout validates the refresh token and revokes the stored refresh token.
+Shared infrastructure lives under:
 
-Access tokens are HMAC-signed tokens implemented with Node `crypto`. The payload contains `sub`, `email`, `tenantId`, `iat`, and `exp`.
+```text
+src/shared/
+```
 
-## Authorization Flow
+### `config`
 
-Protected routes use `authMiddleware` to:
+HTTP and application configuration derived from validated environment variables.
 
-1. Read the `Authorization: Bearer <token>` header.
-2. Verify the token signature and expiry.
-3. Validate the token payload shape.
-4. Load the user's authorization context from the database.
-5. Attach `req.auth`, `req.user`, `req.userRoles`, and `req.userPermissions`.
+### `errors`
 
-Authorization middleware then enforces roles or permissions:
+Operational error classes used throughout the application.
 
-- `requireRoles`
-- `requirePermissions`
-- `requireAnyPermission`
-- `requireAllPermissions`
+### `middlewares`
 
-Permissions are represented as lower-case `resource:action` keys, built from role-permission records.
+Cross-cutting middleware including:
+
+* Error handler
+* Not-found handler
+* Request ID
+* Request logger
+* Rate limiter
+* Validation middleware
+
+### `utils`
+
+Reusable application utilities including:
+
+* Response helpers
+* Async handler
+* Logger
+* Shared utility functions
+
+---
+
+## Design Principles
+
+The architecture is built around several separation-of-concern principles:
+
+### Domain Separation
+
+Business domains are organized into independent modules under:
+
+```text
+src/modules/
+```
+
+### HTTP Separation
+
+Controllers and routes handle HTTP concerns without owning database logic.
+
+### Business Logic Separation
+
+Services contain application behavior independently from Prisma query syntax.
+
+### Data Access Separation
+
+Repositories provide a boundary around Prisma operations.
+
+### Cross-Cutting Infrastructure
+
+Shared middleware and utilities live under:
+
+```text
+src/shared/
+```
+
+### Tenant-Aware Data Access
+
+Tenant-specific data access is enforced through the application and repository layers where required.
+
+---
+
+## Related Documentation
+
+* [Folder Structure](FOLDER_STRUCTURE.md)
+* [Database](DATABASE.md)
+* [RBAC](RBAC.md)
+* [Multi-Tenancy](MULTI_TENANCY.md)
+* [Testing Strategy](TESTING_STRATEGY.md)
+* [Deployment](DEPLOYMENT.md)
+* [Production Setup](PRODUCTION.md)
+* [CI/CD](CI_CD.md)
+* [Docker](DOCKER.md)
