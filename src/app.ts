@@ -9,6 +9,7 @@ import { categoriesRouter } from "./modules/categories/routes/index.js";
 import { commerceRouter } from "./modules/commerce/routes/index.js";
 import { coursesRouter } from "./modules/courses/routes/index.js";
 import { learningOperationsRouter } from "./modules/learning-operations/routes/index.js";
+import { lessonAttachmentsRouter } from "./modules/lesson-attachments/routes/index.js";
 import { lessonsRouter } from "./modules/lessons/routes/index.js";
 import { videosRouter } from "./modules/videos/routes/index.js";
 import { profilesRouter } from "./modules/profiles/routes/index.js";
@@ -19,6 +20,7 @@ import { studentLearningRouter } from "./modules/student-learning/routes/index.j
 import { tagsRouter } from "./modules/tags/routes/index.js";
 import { usersRouter } from "./modules/users/routes/index.js";
 import { swaggerRouter } from "./docs/swagger.router.js";
+import { prisma } from "./database/index.js";
 import { httpConfig } from "./shared/config/index.js";
 import { errorHandler, globalRateLimiter, notFoundHandler, requestId, requestLogger } from "./shared/middlewares/index.js";
 
@@ -51,6 +53,7 @@ app.use("/api/categories", categoriesRouter);
 app.use("/api/tags", tagsRouter);
 app.use("/api/courses", coursesRouter);
 app.use("/api/courses", lessonsRouter);
+app.use("/api/lesson-attachments", lessonAttachmentsRouter);
 app.use("/api/videos", videosRouter);
 app.use("/api/learning", studentLearningRouter);
 app.use("/api/question-bank", questionBankRouter);
@@ -63,8 +66,38 @@ app.use("/api", swaggerRouter);
 app.get("/", (_req, res) => {
   res.status(200).json({
     success: true,
-    message: "Education Platform Backend API is running 🚀",
+    message: "Education Platform Backend API is running",
   });
+});
+
+app.get("/health", (_req, res) => {
+  res.status(200).json({
+    success: true,
+    status: "ok",
+  });
+});
+
+app.get("/live", (_req, res) => {
+  res.status(200).json({
+    success: true,
+    status: "live",
+  });
+});
+
+app.get("/ready", async (_req, res) => {
+  try {
+    await prisma.$queryRaw`SELECT 1`;
+
+    res.status(200).json({
+      success: true,
+      status: "ready",
+    });
+  } catch {
+    res.status(503).json({
+      success: false,
+      status: "not_ready",
+    });
+  }
 });
 
 app.use(notFoundHandler);

@@ -4,14 +4,13 @@ import { CoursesService } from "../../../src/modules/courses/services/courses.se
 import type { ICoursesRepository } from "../../../src/modules/courses/interfaces/index.js";
 import { CourseNotFoundError, DuplicateCourseSlugError } from "../../../src/modules/courses/utils/index.js";
 
-function createRepositoryMock(): ICoursesRepository & {
-  create: ReturnType<typeof vi.fn>;
-  list: ReturnType<typeof vi.fn>;
-  findById: ReturnType<typeof vi.fn>;
-  findBySlug: ReturnType<typeof vi.fn>;
-  updateById: ReturnType<typeof vi.fn>;
-  softDeleteById: ReturnType<typeof vi.fn>;
-} {
+import type { Mock } from "vitest";
+
+type MockRepository<T> = {
+  [K in keyof T]: Mock;
+};
+
+function createRepositoryMock(): MockRepository<ICoursesRepository> {
   return {
     create: vi.fn(),
     list: vi.fn(),
@@ -19,7 +18,7 @@ function createRepositoryMock(): ICoursesRepository & {
     findBySlug: vi.fn(),
     updateById: vi.fn(),
     softDeleteById: vi.fn(),
-  };
+  } as unknown as MockRepository<ICoursesRepository>;
 }
 
 function createCourseRecord(overrides: Record<string, unknown> = {}) {

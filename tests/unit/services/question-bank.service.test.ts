@@ -11,7 +11,13 @@ import {
   QuestionPoolNotFoundError,
 } from "../../../src/modules/question-bank/utils/index.js";
 
-function createRepositoryMock(): IQuestionBankRepository & Record<string, ReturnType<typeof vi.fn>> {
+import type { Mock } from "vitest";
+
+type MockRepository<T> = {
+  [K in keyof T]: Mock;
+};
+
+function createRepositoryMock(): MockRepository<IQuestionBankRepository> {
   return {
     questionBankExists: vi.fn(),
     examExists: vi.fn(),
@@ -30,7 +36,7 @@ function createRepositoryMock(): IQuestionBankRepository & Record<string, Return
     listPools: vi.fn(),
     removeFromPool: vi.fn(),
     getStatistics: vi.fn(),
-  };
+  } as unknown as MockRepository<IQuestionBankRepository>;
 }
 
 function choice(overrides: Record<string, unknown> = {}) {
@@ -104,7 +110,7 @@ describe("QuestionBankService", () => {
 
       // Act
       const created = await service.createQuestion(tenantId, userId, { questionBankId: "bank-123", type: "single_choice", prompt: "Prompt" });
-      const list = await service.listQuestions(tenantId, { page: 1, limit: 10 });
+      const list = await service.listQuestions(tenantId, { page: 1, limit: 10 } as any);
       const found = await service.getQuestionById("question-123", tenantId);
       const updated = await service.updateQuestion("question-123", tenantId, { prompt: "Updated prompt" });
       await service.deleteQuestion("question-123", tenantId);

@@ -10,7 +10,13 @@ import {
   VideoSubtitleNotFoundError,
 } from "../../../src/modules/videos/utils/index.js";
 
-function createRepositoryMock(): IVideosRepository & Record<string, ReturnType<typeof vi.fn>> {
+import type { Mock } from "vitest";
+
+type MockRepository<T> = {
+  [K in keyof T]: Mock;
+};
+
+function createRepositoryMock(): MockRepository<IVideosRepository> {
   return {
     lessonExists: vi.fn(),
     findByLessonId: vi.fn(),
@@ -33,7 +39,7 @@ function createRepositoryMock(): IVideosRepository & Record<string, ReturnType<t
     updateSubtitle: vi.fn(),
     deleteSubtitle: vi.fn(),
     getStatistics: vi.fn(),
-  } as IVideosRepository & Record<string, ReturnType<typeof vi.fn>>;
+  } as unknown as MockRepository<IVideosRepository>;
 }
 
 function createVideoRecord(overrides: Record<string, unknown> = {}) {
@@ -138,7 +144,7 @@ describe("VideosService", () => {
 
     it("should list videos", async () => {
       // Arrange
-      const query = { page: 1, limit: 10 };
+      const query = { page: 1, limit: 10, sortBy: "createdAt", sortOrder: "desc" } as any;
       repository.list.mockResolvedValue({ videos: [createVideoRecord()], total: 1 });
 
       // Act

@@ -1,11 +1,10 @@
 import { describe, it, expect, beforeAll, afterAll } from "vitest";
 import request from "supertest";
 import app from "../../../src/app.js";
-import { createUserFixture } from "../helpers/fixtures.js";
+
 import { cleanupTestUser } from "../helpers/db.js";
 
 describe("Users Module - Integration", () => {
-  let adminToken: string;
   let userToken: string;
   let userId: string;
   let otherUserId: string;
@@ -87,7 +86,7 @@ describe("Users Module - Integration", () => {
     });
 
     it("should return 404 for non-existent user", async () => {
-      const fakeId = "00000000-0000-0000-0000-000000000000";
+
       // This will fail with 403 first because the service checks id match before existence
       // unless you are an admin.
     });
@@ -124,20 +123,20 @@ describe("Users Module - Integration", () => {
   });
 
   describe("DELETE /api/users/:id", () => {
-    it("should allow a user to delete their own profile", async () => {
-      const response = await request(app)
-        .delete(`/api/users/${userId}`)
-        .set("Authorization", `Bearer ${userToken}`);
-
-      expect(response.status).toBe(204);
-    });
-
     it("should forbid a user from deleting another user's profile", async () => {
       const response = await request(app)
         .delete(`/api/users/${otherUserId}`)
         .set("Authorization", `Bearer ${userToken}`);
 
       expect(response.status).toBe(403);
+    });
+
+    it("should allow a user to delete their own profile", async () => {
+      const response = await request(app)
+        .delete(`/api/users/${userId}`)
+        .set("Authorization", `Bearer ${userToken}`);
+
+      expect(response.status).toBe(204);
     });
   });
 });

@@ -18,7 +18,29 @@ export class CommerceRepository implements ICommerceRepository {
     const total = Math.max(subtotal - discount + tax, 0);
     return prisma.$transaction(async (tx) => {
       const order = await tx.order.create({
-        data: { tenantId, userId, orderNumber, status: "pending", currency: data.currency, subtotal, discount, tax, total, items: { create: data.items.map((item) => ({ tenantId, ...item, quantity: item.quantity ?? 1, total: item.unitPrice * (item.quantity ?? 1) })) } },
+        data: {
+          tenant: { connect: { id: tenantId } },
+          user: { connect: { tenantId_id: { tenantId, id: userId } } },
+          orderNumber,
+          status: "pending",
+          currency: data.currency,
+          subtotal,
+          discount,
+          tax,
+          total,
+          items: {
+            create: data.items.map((item) => ({
+              tenant: { connect: { id: tenantId } },
+              ...(item.courseId ? { course: { connect: { tenantId_id: { tenantId, id: item.courseId } } } } : {}),
+              ...(item.bundleId ? { bundle: { connect: { tenantId_id: { tenantId, id: item.bundleId } } } } : {}),
+              itemType: item.itemType,
+              title: item.title,
+              quantity: item.quantity ?? 1,
+              unitPrice: item.unitPrice,
+              total: item.unitPrice * (item.quantity ?? 1),
+            })),
+          },
+        },
         include: orderInclude,
       });
       if (coupon && discount > 0) await tx.couponUsage.create({ data: { tenantId, couponId: coupon.id, orderId: order.id, userId, discountAmount: discount } });

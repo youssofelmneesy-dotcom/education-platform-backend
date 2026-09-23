@@ -1,5 +1,5 @@
 import { beforeAll } from "vitest";
-import { clearDatabase, disconnectPrisma } from "./prismaTestUtils";
+import { clearDatabase } from "./prismaTestUtils.js";
 
 // Only clear DB once at the start of all tests, before each suite
 // Integration tests manage their own cleanup via afterEach in test files

@@ -2,7 +2,7 @@ import { describe, it, expect, afterEach } from "vitest";
 import request from "supertest";
 
 import app from "../../../src/app.js";
-import { createUserFixture, createInvalidEmailFixture, createWeakPasswordFixture } from "../helpers/fixtures.js";
+import { createUserFixture, createInvalidEmailFixture } from "../helpers/fixtures.js";
 import { findUserByEmail, cleanupTestUser } from "../helpers/db.js";
 
 describe("Auth Module - Registration", () => {

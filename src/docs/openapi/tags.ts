@@ -8,5 +8,11 @@ export const openApiTags = [
   { name: "Tags", description: "Course tag endpoints" },
   { name: "Courses", description: "Course management endpoints" },
   { name: "Lessons", description: "Lesson management endpoints" },
+  { name: "Lesson Attachments", description: "Lesson attachment endpoints" },
   { name: "Videos", description: "Video management endpoints" },
+  { name: "Student Learning", description: "Student learning and progress endpoints" },
+  { name: "Learning Operations", description: "Assignments, submissions, rubrics, and certificate endpoints" },
+  { name: "Question Bank", description: "Question bank, choices, and pool endpoints" },
+  { name: "Assessments", description: "Exam, attempt, answer, and result endpoints" },
+  { name: "Commerce", description: "Orders, payments, coupons, gift cards, subscriptions, invoices, and refunds" },
 ] as const;

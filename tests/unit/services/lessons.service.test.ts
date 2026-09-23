@@ -13,14 +13,13 @@ vi.mock("../../../src/database/index.js", () => ({
   },
 }));
 
-function createRepositoryMock(): ILessonsRepository & {
-  create: ReturnType<typeof vi.fn>;
-  listByCourse: ReturnType<typeof vi.fn>;
-  findById: ReturnType<typeof vi.fn>;
-  findBySlug: ReturnType<typeof vi.fn>;
-  updateById: ReturnType<typeof vi.fn>;
-  softDeleteById: ReturnType<typeof vi.fn>;
-} {
+import type { Mock } from "vitest";
+
+type MockRepository<T> = {
+  [K in keyof T]: Mock;
+};
+
+function createRepositoryMock(): MockRepository<ILessonsRepository> {
   return {
     create: vi.fn(),
     listByCourse: vi.fn(),
@@ -28,7 +27,7 @@ function createRepositoryMock(): ILessonsRepository & {
     findBySlug: vi.fn(),
     updateById: vi.fn(),
     softDeleteById: vi.fn(),
-  };
+  } as unknown as MockRepository<ILessonsRepository>;
 }
 
 function createLessonRecord(overrides: Record<string, unknown> = {}) {
@@ -77,7 +76,7 @@ describe("LessonsService", () => {
 
     it("should create a lesson when course exists and slug is unique", async () => {
       // Arrange
-      vi.mocked(prisma.course.findFirst).mockResolvedValue({ id: courseId });
+      vi.mocked(prisma.course.findFirst).mockResolvedValue({ id: courseId } as any);
       repository.findBySlug.mockResolvedValue(null);
       repository.create.mockResolvedValue(createLessonRecord());
 
@@ -103,7 +102,7 @@ describe("LessonsService", () => {
 
     it("should return null publishedAt for unpublished lessons", async () => {
       // Arrange
-      vi.mocked(prisma.course.findFirst).mockResolvedValue({ id: courseId });
+      vi.mocked(prisma.course.findFirst).mockResolvedValue({ id: courseId } as any);
       repository.findBySlug.mockResolvedValue(null);
       repository.create.mockResolvedValue(createLessonRecord({ publishedAt: null }));
 
@@ -125,7 +124,7 @@ describe("LessonsService", () => {
 
     it("should throw DuplicateLessonSlugError when slug already exists in course", async () => {
       // Arrange
-      vi.mocked(prisma.course.findFirst).mockResolvedValue({ id: courseId });
+      vi.mocked(prisma.course.findFirst).mockResolvedValue({ id: courseId } as any);
       repository.findBySlug.mockResolvedValue(createLessonRecord());
 
       // Act & Assert
@@ -137,7 +136,7 @@ describe("LessonsService", () => {
   describe("listByCourse", () => {
     it("should return paginated lessons for an existing course", async () => {
       // Arrange
-      vi.mocked(prisma.course.findFirst).mockResolvedValue({ id: courseId });
+      vi.mocked(prisma.course.findFirst).mockResolvedValue({ id: courseId } as any);
       repository.listByCourse.mockResolvedValue({
         lessons: [createLessonRecord({ id: "lesson-1", title: "Lesson 1" })],
         total: 1,

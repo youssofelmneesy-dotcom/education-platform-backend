@@ -113,7 +113,13 @@ export class LearningOperationsRepository implements ILearningOperationsReposito
 
   async createSubmission(assignmentId: string, userId: string, tenantId: string, data: CreateSubmissionDto) {
     return prisma.submission.create({
-      data: { tenantId, assignmentId, userId, content: data.content, files: data.files?.length ? { create: data.files.map((file) => ({ tenantId, ...file })) } : undefined },
+      data: {
+        tenant: { connect: { id: tenantId } },
+        assignment: { connect: { tenantId_id: { tenantId, id: assignmentId } } },
+        user: { connect: { tenantId_id: { tenantId, id: userId } } },
+        content: data.content,
+        files: data.files?.length ? { create: data.files.map((file) => ({ tenant: { connect: { id: tenantId } }, ...file })) } : undefined,
+      },
       include: submissionInclude,
     });
   }

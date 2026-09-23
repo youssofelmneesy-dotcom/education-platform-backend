@@ -3,14 +3,17 @@ import { ProfilesService } from "../../../src/modules/profiles/services/profiles
 import type { IProfilesRepository } from "../../../src/modules/profiles/interfaces/profiles-repository.interface.js";
 import { ProfileNotFoundError } from "../../../src/modules/profiles/utils/index.js";
 
-function createRepositoryMock(): IProfilesRepository & {
-  findByUserId: ReturnType<typeof vi.fn>;
-  updateByUserId: ReturnType<typeof vi.fn>;
-} {
+import type { Mock } from "vitest";
+
+type MockRepository<T> = {
+  [K in keyof T]: Mock;
+};
+
+function createRepositoryMock(): MockRepository<IProfilesRepository> {
   return {
     findByUserId: vi.fn(),
     updateByUserId: vi.fn(),
-  };
+  } as unknown as MockRepository<IProfilesRepository>;
 }
 
 describe("ProfilesService", () => {

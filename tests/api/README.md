@@ -1,12 +1,15 @@
 # API Testing
 
-This folder documents the Postman/Newman API suite for the authentication endpoints.
+This folder documents the Postman/Newman API suite.
+
+## Collection Files
+
+- `postman/Education Platform API.postman_collection.json`
+- `postman/Education Platform Local.postman_environment.json`
 
 ## Coverage
-- `POST /api/auth/register`
-- `POST /api/auth/login`
-- `POST /api/auth/refresh`
-- `POST /api/auth/logout`
+
+The collection is generated from the verified OpenAPI document and covers the routed API surface across Auth, Users, Profiles, Roles, Permissions, Categories, Tags, Courses, Lessons, Lesson Attachments, Videos, Student Learning, Question Bank, Assessments, Learning Operations, and Commerce.
 
 ## What the collection validates
 - Status codes
@@ -17,3 +20,10 @@ This folder documents the Postman/Newman API suite for the authentication endpoi
 - Cookie absence for the current auth flow
 - Response time
 - Token extraction and chaining across requests
+
+Run:
+
+```bash
+npm run test:api
+npm run test:api:html
+```

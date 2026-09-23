@@ -7,6 +7,7 @@
     "module": "NodeNext",
     "moduleResolution": "NodeNext",
     "lib": ["ES2022"],
+    "ignoreDeprecations": "6.0",
 
     /* =========================
        Project Structure
@@ -72,7 +73,7 @@
     "emitDecoratorMetadata": false
   },
 
-  "include": ["src/**/*", "tests/**/*"],
+  "include": ["src/**/*", "tests/**/*", "*.ts", "*.js"],
 
   "exclude": [
     "node_modules",

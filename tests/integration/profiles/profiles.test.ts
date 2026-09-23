@@ -6,7 +6,7 @@ import { prisma } from "../../../src/database/index.js";
 
 describe("Profiles Module - Integration", () => {
   let userToken: string;
-  let userEmail = "profile.test@example.com";
+  const userEmail = "profile.test@example.com";
   const password = "SecurePass123!";
 
   beforeAll(async () => {

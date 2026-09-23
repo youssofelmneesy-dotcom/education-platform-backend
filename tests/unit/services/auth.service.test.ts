@@ -16,16 +16,13 @@ function signJwt(payload: Record<string, unknown>, secret: string): string {
   return `${header}.${body}.${base64UrlEncode(signature)}`;
 }
 
-function createRepositoryMock(): IAuthRepository & {
-  existsByEmail: ReturnType<typeof vi.fn>;
-  findByEmailAndTenant: ReturnType<typeof vi.fn>;
-  getAuthorizationContext: ReturnType<typeof vi.fn>;
-  findRefreshTokenByUserAndTenant: ReturnType<typeof vi.fn>;
-  create: ReturnType<typeof vi.fn>;
-  saveRefreshToken: ReturnType<typeof vi.fn>;
-  rotateRefreshToken: ReturnType<typeof vi.fn>;
-  revokeRefreshToken: ReturnType<typeof vi.fn>;
-} {
+import type { Mock } from "vitest";
+
+type MockRepository<T> = {
+  [K in keyof T]: Mock;
+};
+
+function createRepositoryMock(): MockRepository<IAuthRepository> {
   return {
     existsByEmail: vi.fn(),
     findByEmailAndTenant: vi.fn(),
@@ -35,7 +32,7 @@ function createRepositoryMock(): IAuthRepository & {
     saveRefreshToken: vi.fn(),
     rotateRefreshToken: vi.fn(),
     revokeRefreshToken: vi.fn(),
-  };
+  } as unknown as MockRepository<IAuthRepository>;
 }
 
 beforeEach(() => {
@@ -114,7 +111,7 @@ describe("AuthService", () => {
       repository.saveRefreshToken.mockResolvedValue(undefined);
       vi.spyOn(bcrypt, "compare").mockResolvedValue(true as never);
       vi.spyOn(bcrypt, "hash").mockResolvedValue("refresh-token-hash" as never);
-      vi.spyOn(crypto, "randomBytes").mockReturnValue(Buffer.from("a".repeat(64), "utf8"));
+      vi.spyOn(crypto, "randomBytes").mockReturnValue(Buffer.from("a".repeat(64), "utf8") as any);
 
       const service = new AuthService(repository);
       const result = await service.login({ email: "JOHN@example.com", password: "Password1!" });
@@ -173,7 +170,7 @@ describe("AuthService", () => {
       repository.rotateRefreshToken.mockResolvedValue(undefined);
       vi.spyOn(bcrypt, "compare").mockResolvedValue(true as never);
       vi.spyOn(bcrypt, "hash").mockResolvedValue("new-refresh-token-hash" as never);
-      vi.spyOn(crypto, "randomBytes").mockReturnValue(Buffer.from("b".repeat(64), "utf8"));
+      vi.spyOn(crypto, "randomBytes").mockReturnValue(Buffer.from("b".repeat(64), "utf8") as any);
 
       const now = Math.floor(Date.now() / 1000);
       const refreshToken = signJwt({

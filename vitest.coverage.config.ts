@@ -6,13 +6,12 @@ export default defineConfig({
     include: ["tests/**/*.test.ts"],
     setupFiles: ["./tests/setup/setupEnv.ts", "./tests/setup/resetDb.ts"],
     globalSetup: "./tests/setup/global-setup.ts",
-    globalTeardown: "./tests/setup/global-teardown.ts",
-    threads: false,
-    singleThread: true,
+    fileParallelism: false,
+    maxWorkers: 1,
+
     coverage: {
       provider: "v8",
       reporter: ["text", "html", "lcov", "json"],
-      all: true,
       include: ["src/**/*.{ts,js}"],
       exclude: [
         "node_modules/**",

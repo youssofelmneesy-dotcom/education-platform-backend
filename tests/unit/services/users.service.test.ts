@@ -3,18 +3,19 @@ import { UsersService } from "../../../src/modules/users/services/users.service.
 import type { IUsersRepository } from "../../../src/modules/users/interfaces/users-repository.interface.js";
 import { ForbiddenError, NotFoundError } from "../../../src/modules/users/utils/index.js";
 
-function createRepositoryMock(): IUsersRepository & {
-  listByTenant: ReturnType<typeof vi.fn>;
-  findById: ReturnType<typeof vi.fn>;
-  updateById: ReturnType<typeof vi.fn>;
-  softDeleteById: ReturnType<typeof vi.fn>;
-} {
+import type { Mock } from "vitest";
+
+type MockRepository<T> = {
+  [K in keyof T]: Mock;
+};
+
+function createRepositoryMock(): MockRepository<IUsersRepository> {
   return {
     listByTenant: vi.fn(),
     findById: vi.fn(),
     updateById: vi.fn(),
     softDeleteById: vi.fn(),
-  };
+  } as unknown as MockRepository<IUsersRepository>;
 }
 
 describe("UsersService", () => {

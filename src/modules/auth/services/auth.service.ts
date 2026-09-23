@@ -107,6 +107,7 @@ function getAccessToken(userId: string, email: string, tenantId: string): string
   const now = Math.floor(Date.now() / 1000);
   const payload = {
     sub: userId,
+    jti: crypto.randomUUID(),
     email,
     tenantId,
     iat: now,
@@ -127,6 +128,7 @@ function getRefreshToken(userId: string, email: string, tenantId: string, token:
   const now = Math.floor(Date.now() / 1000);
   const payload = {
     sub: userId,
+    jti: crypto.randomUUID(),
     email,
     tenantId,
     token,

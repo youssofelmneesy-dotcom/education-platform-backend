@@ -3,14 +3,13 @@ import { CategoriesService } from "../../../src/modules/categories/services/cate
 import type { ICategoriesRepository } from "../../../src/modules/categories/interfaces/categories-repository.interface.js";
 import { DuplicateCategorySlugError, CategoryNotFoundError } from "../../../src/modules/categories/utils/index.js";
 
-function createRepositoryMock(): ICategoriesRepository & {
-  create: ReturnType<typeof vi.fn>;
-  list: ReturnType<typeof vi.fn>;
-  findById: ReturnType<typeof vi.fn>;
-  findBySlug: ReturnType<typeof vi.fn>;
-  updateById: ReturnType<typeof vi.fn>;
-  softDeleteById: ReturnType<typeof vi.fn>;
-} {
+import type { Mock } from "vitest";
+
+type MockRepository<T> = {
+  [K in keyof T]: Mock;
+};
+
+function createRepositoryMock(): MockRepository<ICategoriesRepository> {
   return {
     create: vi.fn(),
     list: vi.fn(),
@@ -18,7 +17,7 @@ function createRepositoryMock(): ICategoriesRepository & {
     findBySlug: vi.fn(),
     updateById: vi.fn(),
     softDeleteById: vi.fn(),
-  };
+  } as unknown as MockRepository<ICategoriesRepository>;
 }
 
 describe("CategoriesService", () => {

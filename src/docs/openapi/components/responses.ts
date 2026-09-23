@@ -55,6 +55,14 @@ export const commonResponses = {
       },
     },
   },
+  UnprocessableEntity: {
+    description: "Request was syntactically valid but could not be processed by the domain rules",
+    content: {
+      "application/json": {
+        schema: { $ref: "#/components/schemas/ErrorResponse" },
+      },
+    },
+  },
   InternalServerError: {
     description: "Internal server error",
     content: {

@@ -8,7 +8,13 @@ import {
   LessonProgressNotSupportedError,
 } from "../../../src/modules/student-learning/utils/index.js";
 
-function createRepositoryMock(): IStudentLearningRepository & Record<string, ReturnType<typeof vi.fn>> {
+import type { Mock } from "vitest";
+
+type MockRepository<T> = {
+  [K in keyof T]: Mock;
+};
+
+function createRepositoryMock(): MockRepository<IStudentLearningRepository> {
   return {
     findLessonVideo: vi.fn(),
     startLesson: vi.fn(),
@@ -31,7 +37,7 @@ function createRepositoryMock(): IStudentLearningRepository & Record<string, Ret
     removeLessonBookmark: vi.fn(),
     listBookmarks: vi.fn(),
     getDashboard: vi.fn(),
-  };
+  } as unknown as MockRepository<IStudentLearningRepository>;
 }
 
 function createProgressRecord(overrides: Record<string, unknown> = {}) {
